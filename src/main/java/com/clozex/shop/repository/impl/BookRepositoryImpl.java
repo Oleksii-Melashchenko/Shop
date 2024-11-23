@@ -1,3 +1,5 @@
+package com.clozex.shop.repository.impl;
+
 import com.clozex.shop.exception.DataProcessingException;
 import com.clozex.shop.model.Book;
 import com.clozex.shop.repository.BookRepository;
