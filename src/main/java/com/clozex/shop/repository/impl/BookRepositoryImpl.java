@@ -1,23 +1,20 @@
 package com.clozex.shop.repository.impl;
 
 import com.clozex.shop.exception.DataProcessingException;
-import com.clozex.shop.exception.EntityNotFoundException;
 import com.clozex.shop.model.Book;
 import com.clozex.shop.repository.BookRepository;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class BookRepositoryImpl implements BookRepository {
     private final SessionFactory sessionFactory;
-
-    public BookRepositoryImpl(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
 
     @Override
     public Book save(Book book) {
@@ -59,7 +56,7 @@ public class BookRepositoryImpl implements BookRepository {
                         .setParameter("id", id)
                         .getSingleResult());
         } catch (Exception e) {
-            throw new EntityNotFoundException("Can`t get book by id: " + id);
+            throw new DataProcessingException("Can`t get book by id: " + id);
         }
     }
 }
