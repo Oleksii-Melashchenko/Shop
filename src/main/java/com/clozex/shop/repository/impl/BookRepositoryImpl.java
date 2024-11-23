@@ -28,7 +28,7 @@ public class BookRepositoryImpl implements BookRepository {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new DataProcessingException("Can`t save book: " + book, e);
+            throw new DataProcessingException("Can`t save book: " + book);
         } finally {
             if (session != null) {
                 session.close();
@@ -42,7 +42,7 @@ public class BookRepositoryImpl implements BookRepository {
             return session.createQuery("FROM Book", Book.class)
                     .getResultList();
         } catch (Exception e) {
-            throw new DataProcessingException("Can`t fetch all books", e);
+            throw new DataProcessingException("Can`t fetch all books");
         }
     }
 
@@ -53,7 +53,7 @@ public class BookRepositoryImpl implements BookRepository {
                     .setParameter("id", id)
                     .getSingleResult());
         } catch (Exception e) {
-            throw new DataProcessingException("Can`t get book by id: " + id, e);
+            throw new DataProcessingException("Can`t get book by id: " + id);
         }
     }
 }
