@@ -49,7 +49,8 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public Optional<Book> findById(Long id) {
         try (Session session = sessionFactory.openSession()) {
-            return Optional.ofNullable(session.createQuery("FROM Book b WHERE b.id = :id", Book.class)
+            return Optional.ofNullable(session.createQuery("FROM Book b WHERE b.id = :id",
+                                                           Book.class)
                     .setParameter("id", id)
                     .getSingleResult());
         } catch (Exception e) {
