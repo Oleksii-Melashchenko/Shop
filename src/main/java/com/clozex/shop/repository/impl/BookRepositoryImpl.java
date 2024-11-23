@@ -4,7 +4,6 @@ import com.clozex.shop.exceptions.DataProcessingException;
 import com.clozex.shop.model.Book;
 import com.clozex.shop.repository.BookRepository;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
