@@ -1,9 +1,10 @@
 package com.clozex.shop.repository.impl;
 
-import com.clozex.shop.exceptions.DataProcessingException;
+import com.clozex.shop.exception.DataProcessingException;
 import com.clozex.shop.model.Book;
 import com.clozex.shop.repository.BookRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -29,7 +30,7 @@ public class BookRepositoryImpl implements BookRepository {
             if (transaction != null) {
                 transaction.rollback();
             }
-            throw new DataProcessingException("Can`t save book" + book);
+            throw new DataProcessingException("Can`t save book: " + book);
         } finally {
             if (session != null) {
                 session.close();
@@ -40,10 +41,22 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public List<Book> findAll() {
         try (Session session = sessionFactory.openSession()) {
-            return session.createQuery("FROM Book ", Book.class)
+            return session.createQuery("FROM Book", Book.class)
                     .getResultList();
         } catch (Exception e) {
-            throw new DataProcessingException("Can`t find all books");
+            throw new DataProcessingException("Can`t fetch all books");
+        }
+    }
+
+    @Override
+    public Optional<Book> findById(Long id) {
+        try (Session session = sessionFactory.openSession()) {
+            return Optional.ofNullable(session.createQuery("FROM Book b WHERE b.id = :id",
+                                                           Book.class)
+                    .setParameter("id", id)
+                    .getSingleResult());
+        } catch (Exception e) {
+            throw new DataProcessingException("Can`t get book by id: " + id);
         }
     }
 }

@@ -1,10 +1,13 @@
 package com.clozex.shop.service;
 
-import com.clozex.shop.model.Book;
+import com.clozex.shop.dto.BookDto;
+import com.clozex.shop.dto.CreateBookRequestDto;
 import java.util.List;
 
 public interface BookService {
-    Book save(Book book);
+    BookDto save(CreateBookRequestDto requestDto);
 
-    List<Book> findAll();
+    List<BookDto> findAll();
+
+    BookDto getById(Long id);
 }
