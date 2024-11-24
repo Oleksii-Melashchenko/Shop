@@ -14,4 +14,5 @@ public interface BookMapper {
     Book toModel(CreateBookRequestDto requestDto);
 
     void updateBookFromDto(CreateBookRequestDto requestDto, @MappingTarget Book book);
+
 }
