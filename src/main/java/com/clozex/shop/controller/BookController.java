@@ -7,6 +7,7 @@ import com.clozex.shop.service.BookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
@@ -54,8 +55,8 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public List<BookDto> search(BookSearchParametersDto searchParams,
-                                 @ParameterObject @PageableDefault Pageable pageable) {
+    public Page<BookDto> search(BookSearchParametersDto searchParams,
+                                @ParameterObject @PageableDefault Pageable pageable) {
         return bookService.searchBooks(searchParams, pageable);
     }
 }

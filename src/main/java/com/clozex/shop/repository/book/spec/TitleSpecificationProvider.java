@@ -20,5 +20,4 @@ public class TitleSpecificationProvider implements SpecificationProvider<Book> {
     public String getKey() {
         return TITLE_KEY;
     }
-
 }
