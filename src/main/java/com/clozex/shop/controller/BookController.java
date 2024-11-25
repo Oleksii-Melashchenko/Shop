@@ -1,10 +1,15 @@
 package com.clozex.shop.controller;
 
 import com.clozex.shop.dto.BookDto;
+import com.clozex.shop.dto.BookSearchParametersDto;
 import com.clozex.shop.dto.CreateBookRequestDto;
 import com.clozex.shop.service.BookService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.api.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -47,5 +52,11 @@ public class BookController {
     public BookDto updateBookById(@PathVariable Long id,
                                   @RequestBody CreateBookRequestDto requestDto) {
         return bookService.updateById(id, requestDto);
+    }
+
+    @GetMapping("/search")
+    public Page<BookDto> search(BookSearchParametersDto searchParams,
+                                @ParameterObject @PageableDefault Pageable pageable) {
+        return bookService.searchBooks(searchParams, pageable);
     }
 }
