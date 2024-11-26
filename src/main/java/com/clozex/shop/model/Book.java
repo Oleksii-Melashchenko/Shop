@@ -7,6 +7,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
@@ -22,10 +25,16 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank
+    @Size(max = 255)
     @Column(nullable = false)
     private String title;
+    @NotBlank
+    @Size(max = 255)
     @Column(nullable = false)
     private String author;
+    @NotBlank
+    @Size(max = 255)
     @Column(nullable = false, unique = true)
     private String isbn;
     @Column(nullable = false)

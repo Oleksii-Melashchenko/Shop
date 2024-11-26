@@ -4,6 +4,7 @@ import com.clozex.shop.dto.BookDto;
 import com.clozex.shop.dto.BookSearchParametersDto;
 import com.clozex.shop.dto.CreateBookRequestDto;
 import com.clozex.shop.service.BookService;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.api.annotations.ParameterObject;
@@ -38,7 +39,7 @@ public class BookController {
     }
 
     @PostMapping
-    public BookDto createBook(@RequestBody CreateBookRequestDto requestDto) {
+    public BookDto createBook(@Valid @RequestBody CreateBookRequestDto requestDto) {
         return bookService.save(requestDto);
     }
 
@@ -55,7 +56,7 @@ public class BookController {
     }
 
     @GetMapping("/search")
-    public Page<BookDto> search(BookSearchParametersDto searchParams,
+    public Page<BookDto> search(@Valid BookSearchParametersDto searchParams,
                                 @ParameterObject @PageableDefault Pageable pageable) {
         return bookService.searchBooks(searchParams, pageable);
     }
