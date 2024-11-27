@@ -23,6 +23,7 @@ public record CreateBookRequestDto(
         @DecimalMin(value = "0.0")
         BigDecimal price,
 
+        @Size(max = 255)
         String description,
 
         @Size(max = 255)
