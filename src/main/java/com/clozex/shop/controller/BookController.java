@@ -47,18 +47,7 @@ public class BookController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Creating new book in db", description = """
-            Creates a new book in the database.
-            Example request body:
-            {
-                "title": "Title",
-                "author": "Author",
-                "isbn": "1", (Unique)
-                "price": 1, (Can`t be lower then 0)
-                "description": "description", (Optional)
-                "coverImage": "https://example.com/cover.jpg" (Optional)
-            }
-            """)
+    @Operation(summary = "Creating new book in db")
     public BookDto createBook(@Valid @RequestBody CreateBookRequestDto requestDto) {
         return bookService.save(requestDto);
     }
@@ -71,18 +60,7 @@ public class BookController {
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Updating book in db by id", description = """
-            Updates book in the database by id.
-            Example request body:
-            {
-                "title": "Title",
-                "author": "Author",
-                "isbn": "1", (Unique)
-                "price": 1, (Can`t be lower then 0)
-                "description": "description", (Optional)
-                "coverImage": "https://example.com/cover.jpg" (Optional)
-            }
-            """)
+    @Operation(summary = "Updating book in db by id")
     public BookDto updateBookById(@PathVariable Long id,
                                   @RequestBody CreateBookRequestDto requestDto) {
         return bookService.updateById(id, requestDto);
