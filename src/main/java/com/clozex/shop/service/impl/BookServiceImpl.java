@@ -31,10 +31,11 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDto> findAll() {
-        return bookRepository.findAll().stream()
+    public Page<BookDto> findAll(Pageable pageable) {
+        List<BookDto> bookDtos = bookRepository.findAll(pageable).stream()
                 .map(bookMapper::toDto)
                 .toList();
+        return new PageImpl<>(bookDtos);
     }
 
     @Override
