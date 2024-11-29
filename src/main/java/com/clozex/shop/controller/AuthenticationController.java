@@ -4,6 +4,7 @@ import com.clozex.shop.dto.user.UserRegistrationRequestDto;
 import com.clozex.shop.dto.user.UserResponseDto;
 import com.clozex.shop.exception.RegistrationException;
 import com.clozex.shop.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
     private final UserService userService;
 
+    @Operation(summary = "Registering and saving new user in db")
     @PostMapping("/register")
     public UserResponseDto register(@RequestBody @Valid UserRegistrationRequestDto request)
             throws RegistrationException {
