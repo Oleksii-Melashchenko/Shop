@@ -1,8 +1,8 @@
 package com.clozex.shop.service.impl;
 
-import com.clozex.shop.dto.BookDto;
-import com.clozex.shop.dto.BookSearchParametersDto;
-import com.clozex.shop.dto.CreateBookRequestDto;
+import com.clozex.shop.dto.book.BookDto;
+import com.clozex.shop.dto.book.BookSearchParametersDto;
+import com.clozex.shop.dto.book.CreateBookRequestDto;
 import com.clozex.shop.exception.EntityNotFoundException;
 import com.clozex.shop.mapper.BookMapper;
 import com.clozex.shop.model.Book;

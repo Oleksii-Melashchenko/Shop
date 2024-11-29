@@ -1,8 +1,8 @@
 package com.clozex.shop.service;
 
-import com.clozex.shop.dto.BookDto;
-import com.clozex.shop.dto.BookSearchParametersDto;
-import com.clozex.shop.dto.CreateBookRequestDto;
+import com.clozex.shop.dto.book.BookDto;
+import com.clozex.shop.dto.book.BookSearchParametersDto;
+import com.clozex.shop.dto.book.CreateBookRequestDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

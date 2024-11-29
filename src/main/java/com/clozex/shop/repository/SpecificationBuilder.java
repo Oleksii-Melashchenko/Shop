@@ -1,6 +1,6 @@
 package com.clozex.shop.repository;
 
-import com.clozex.shop.dto.BookSearchParametersDto;
+import com.clozex.shop.dto.book.BookSearchParametersDto;
 import org.springframework.data.jpa.domain.Specification;
 
 public interface SpecificationBuilder<T> {

@@ -1,8 +1,8 @@
 package com.clozex.shop.controller;
 
-import com.clozex.shop.dto.BookDto;
-import com.clozex.shop.dto.BookSearchParametersDto;
-import com.clozex.shop.dto.CreateBookRequestDto;
+import com.clozex.shop.dto.book.BookDto;
+import com.clozex.shop.dto.book.BookSearchParametersDto;
+import com.clozex.shop.dto.book.CreateBookRequestDto;
 import com.clozex.shop.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

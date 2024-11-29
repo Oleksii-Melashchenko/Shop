@@ -1,6 +1,6 @@
 package com.clozex.shop.repository.book;
 
-import com.clozex.shop.dto.BookSearchParametersDto;
+import com.clozex.shop.dto.book.BookSearchParametersDto;
 import com.clozex.shop.model.Book;
 import com.clozex.shop.repository.SpecificationBuilder;
 import com.clozex.shop.repository.SpecificationProviderManager;
