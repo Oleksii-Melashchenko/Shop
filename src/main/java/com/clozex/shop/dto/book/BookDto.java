@@ -1,4 +1,4 @@
-package com.clozex.shop.dto;
+package com.clozex.shop.dto.book;
 
 import java.math.BigDecimal;
 
