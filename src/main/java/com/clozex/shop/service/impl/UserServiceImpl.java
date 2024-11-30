@@ -4,7 +4,7 @@ import com.clozex.shop.dto.user.UserRegistrationRequestDto;
 import com.clozex.shop.dto.user.UserResponseDto;
 import com.clozex.shop.exception.RegistrationException;
 import com.clozex.shop.mapper.UserMapper;
-import com.clozex.shop.model.Role;
+import com.clozex.shop.model.RoleName;
 import com.clozex.shop.model.User;
 import com.clozex.shop.repository.user.UserRepository;
 import com.clozex.shop.service.RoleService;
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = userMapper.toModel(requestDto);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setRoles(Set.of(roleService.findByName(Role.RoleName.ROLE_USER)));
+        user.setRoles(Set.of(roleService.findByName(RoleName.ROLE_USER)));
         return userMapper.toDto(userRepository.save(user));
     }
 }
