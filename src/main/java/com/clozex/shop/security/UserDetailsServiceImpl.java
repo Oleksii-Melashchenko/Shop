@@ -1,4 +1,4 @@
-package com.clozex.shop.service.impl;
+package com.clozex.shop.security;
 
 import com.clozex.shop.exception.EntityNotFoundException;
 import com.clozex.shop.repository.user.UserRepository;
