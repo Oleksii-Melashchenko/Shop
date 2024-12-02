@@ -36,14 +36,14 @@ public class BookController {
             - title
             - author
             """)
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasRole('USER')")
     public Page<BookDto> getAll(Pageable pageable) {
         return bookService.findAll(pageable);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Getting book by id")
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasRole('USER')")
     public BookDto getBookById(@PathVariable Long id) {
         return bookService.getById(id);
     }
@@ -78,7 +78,7 @@ public class BookController {
             - title
             - author
             """)
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
+    @PreAuthorize("hasRole('USER')")
     public Page<BookDto> search(@Valid BookSearchParametersDto searchParams,
                                 @PageableDefault Pageable pageable) {
         return bookService.searchBooks(searchParams, pageable);
