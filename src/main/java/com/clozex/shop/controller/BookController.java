@@ -36,16 +36,28 @@ public class BookController {
             - title
             - author
             """)
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     public Page<BookDto> getAll(Pageable pageable) {
         return bookService.findAll(pageable);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Getting book by id")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     public BookDto getBookById(@PathVariable Long id) {
         return bookService.getById(id);
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "Searching books with parameters", description = """
+            Searching and soring books using the following parameters:
+            - title
+            - author
+            """)
+    @PreAuthorize("hasRole('USER')")
+    public Page<BookDto> search(@Valid BookSearchParametersDto searchParams,
+                                @PageableDefault Pageable pageable) {
+        return bookService.searchBooks(searchParams, pageable);
     }
 
     @PostMapping
@@ -70,17 +82,5 @@ public class BookController {
     public BookDto updateBookById(@PathVariable Long id,
                                   @RequestBody CreateBookRequestDto requestDto) {
         return bookService.updateById(id, requestDto);
-    }
-
-    @GetMapping("/search")
-    @Operation(summary = "Searching books with parameters", description = """
-            Searching and soring books using the following parameters:
-            - title
-            - author
-            """)
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public Page<BookDto> search(@Valid BookSearchParametersDto searchParams,
-                                @PageableDefault Pageable pageable) {
-        return bookService.searchBooks(searchParams, pageable);
     }
 }
