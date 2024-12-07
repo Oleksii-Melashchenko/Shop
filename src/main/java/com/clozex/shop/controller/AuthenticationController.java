@@ -1,8 +1,11 @@
 package com.clozex.shop.controller;
 
+import com.clozex.shop.dto.user.UserLoginRequestDto;
+import com.clozex.shop.dto.user.UserLoginResponseDto;
 import com.clozex.shop.dto.user.UserRegistrationRequestDto;
 import com.clozex.shop.dto.user.UserResponseDto;
 import com.clozex.shop.exception.RegistrationException;
+import com.clozex.shop.security.AuthenticationService;
 import com.clozex.shop.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,12 +24,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthenticationController {
     private final UserService userService;
+    private final AuthenticationService authenticationService;
 
-    @Operation(summary = "Registering and saving new user in db")
+    @Operation(summary = "Register a new user")
+    @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/register")
-    public UserResponseDto register(@RequestBody @Valid UserRegistrationRequestDto request)
+    public UserResponseDto register(@RequestBody @Valid UserRegistrationRequestDto requestDto)
             throws RegistrationException {
-        return userService.register(request);
+        return userService.register(requestDto);
+    }
+
+    @Operation(summary = "Login a user")
+    @PostMapping("/login")
+    public UserLoginResponseDto login(@RequestBody @Valid UserLoginRequestDto request) {
+        return authenticationService.authenticate(request);
     }
 }

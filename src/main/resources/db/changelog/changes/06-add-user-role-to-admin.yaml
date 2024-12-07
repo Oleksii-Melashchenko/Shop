@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_two_users
+      author: clo3eX
+      changes:
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  value: 1
+              - column:
+                  name: role_id
+                  value: 2

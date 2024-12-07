@@ -48,6 +48,18 @@ public class BookController {
         return bookService.getById(id);
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "Searching books with parameters", description = """
+            Searching and soring books using the following parameters:
+            - title
+            - author
+            """)
+    @PreAuthorize("hasRole('USER')")
+    public Page<BookDto> search(@Valid BookSearchParametersDto searchParams,
+                                @PageableDefault Pageable pageable) {
+        return bookService.searchBooks(searchParams, pageable);
+    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Creating new book in db")
@@ -70,17 +82,5 @@ public class BookController {
     public BookDto updateBookById(@PathVariable Long id,
                                   @RequestBody CreateBookRequestDto requestDto) {
         return bookService.updateById(id, requestDto);
-    }
-
-    @GetMapping("/search")
-    @Operation(summary = "Searching books with parameters", description = """
-            Searching and soring books using the following parameters:
-            - title
-            - author
-            """)
-    @PreAuthorize("hasRole('USER')")
-    public Page<BookDto> search(@Valid BookSearchParametersDto searchParams,
-                                @PageableDefault Pageable pageable) {
-        return bookService.searchBooks(searchParams, pageable);
     }
 }
