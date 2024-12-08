@@ -12,7 +12,7 @@ import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-@SQLDelete(sql = "UPDATE users SET is_deleted = TRUE WHERE id = ?")
+@SQLDelete(sql = "UPDATE categories SET is_deleted = TRUE WHERE id = ?")
 @SQLRestriction(value = "is_Deleted = FALSE")
 @Table(name = "categories")
 @NoArgsConstructor
