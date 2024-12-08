@@ -5,8 +5,15 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.NamedAttributeNode;
+import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
@@ -14,6 +21,10 @@ import org.hibernate.annotations.SQLRestriction;
 
 @SQLDelete(sql = "UPDATE users SET is_deleted = TRUE WHERE id = ?")
 @SQLRestriction(value = "is_Deleted = FALSE")
+@NamedEntityGraph(
+        name = "Book.category",
+        attributeNodes = @NamedAttributeNode("categories")
+)
 @Entity
 @Getter
 @Setter
@@ -41,4 +52,10 @@ public class Book {
 
     @Column(nullable = false)
     private Boolean isDeleted = false;
+
+    @ManyToMany
+    @JoinTable(
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private Set<Category> categories = new HashSet<>();
 }
