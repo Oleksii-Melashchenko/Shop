@@ -1,6 +1,7 @@
 package com.clozex.shop.service.impl;
 
 import com.clozex.shop.dto.book.BookDto;
+import com.clozex.shop.dto.book.BookDtoWithoutCategoryIds;
 import com.clozex.shop.dto.book.BookSearchParametersDto;
 import com.clozex.shop.dto.book.CreateBookRequestDto;
 import com.clozex.shop.exception.EntityNotFoundException;
@@ -60,5 +61,11 @@ public class BookServiceImpl implements BookService {
         Specification<Book> specification = bookSpecificationBuilder.build(searchParams);
         return bookRepository.findAll(specification,pageable)
                 .map(bookMapper::toDto);
+    }
+
+    @Override
+    public Page<BookDtoWithoutCategoryIds> getBooksByCategoryId(Long id, Pageable pageable) {
+        return bookRepository.findAllByCategoryId(id, pageable)
+                .map(bookMapper::toWithoutCategoryIdDto);
     }
 }
