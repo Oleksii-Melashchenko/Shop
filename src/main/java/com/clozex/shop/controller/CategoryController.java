@@ -8,9 +8,9 @@ import com.clozex.shop.service.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.List;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,7 +42,7 @@ public class CategoryController {
     @GetMapping("/{id}/books")
     @Operation(summary = "Getting all books by category id")
     @PreAuthorize("hasRole('USER')")
-    public List<BookDtoWithoutCategoryIds> getBooksByCategoryId(@PathVariable Long id,
+    public Page<BookDtoWithoutCategoryIds> getBooksByCategoryId(@PathVariable Long id,
                                                                 Pageable pageable) {
         return bookService.getBooksByCategoryId(id, pageable);
     }

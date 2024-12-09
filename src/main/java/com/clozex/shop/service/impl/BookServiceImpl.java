@@ -10,7 +10,6 @@ import com.clozex.shop.model.Book;
 import com.clozex.shop.repository.book.BookRepository;
 import com.clozex.shop.repository.book.BookSpecificationBuilder;
 import com.clozex.shop.service.BookService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -65,10 +64,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<BookDtoWithoutCategoryIds> getBooksByCategoryId(Long id,
-                                                                Pageable pageable) {
-        return bookRepository.findAllByCategoriesId(id, pageable).stream()
-                .map(bookMapper::toWithoutCategoryIdDto)
-                .toList();
+    public Page<BookDtoWithoutCategoryIds> getBooksByCategoryId(Long id, Pageable pageable) {
+        return bookRepository.findAllByCategoryId(id, pageable)
+                .map(bookMapper::toWithoutCategoryIdDto);
     }
 }

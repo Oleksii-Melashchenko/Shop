@@ -4,7 +4,6 @@ import com.clozex.shop.dto.book.BookDto;
 import com.clozex.shop.dto.book.BookDtoWithoutCategoryIds;
 import com.clozex.shop.dto.book.BookSearchParametersDto;
 import com.clozex.shop.dto.book.CreateBookRequestDto;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -21,6 +20,6 @@ public interface BookService {
 
     Page<BookDto> searchBooks(BookSearchParametersDto searchParams, Pageable pageable);
 
-    List<BookDtoWithoutCategoryIds> getBooksByCategoryId(Long id,
+    Page<BookDtoWithoutCategoryIds> getBooksByCategoryId(Long id,
                                                                 Pageable pageable);
 }

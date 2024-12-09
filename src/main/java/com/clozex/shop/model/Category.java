@@ -13,7 +13,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @SQLDelete(sql = "UPDATE categories SET is_deleted = TRUE WHERE id = ?")
-@SQLRestriction(value = "is_Deleted = FALSE")
+@SQLRestriction(value = "is_deleted = FALSE")
 @Table(name = "categories")
 @NoArgsConstructor
 @Getter
@@ -30,10 +30,9 @@ public class Category {
     private String description;
 
     @Column(nullable = false)
-    private Boolean isDeleted = false;
+    private boolean isDeleted = false;
 
     public Category(Long id) {
         this.id = id;
     }
-
 }
