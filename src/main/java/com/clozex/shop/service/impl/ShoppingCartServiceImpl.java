@@ -65,7 +65,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
 
     private ShoppingCart getShoppingCartOrCreate(User user) {
         return shoppingCartRepository.findByUserId(user.getId())
-                .orElseGet(() -> shoppingCartRepository.save(new ShoppingCart(userRepository.findByEmail(user.getEmail())
+                .orElseGet(() -> shoppingCartRepository.save(new ShoppingCart(userRepository
+                        .findByEmail(user.getEmail())
                         .orElseThrow(
                                 () -> new EntityNotFoundException("Can`t find user"
                                         + user)))));
