@@ -42,7 +42,7 @@ public class ShoppingCart {
     private Set<CartItem> cartItems = new HashSet<>();
 
     @Column(nullable = false)
-    private Boolean isDeleted = false;
+    private boolean isDeleted = false;
 
     public ShoppingCart(User user) {
         this.user = user;

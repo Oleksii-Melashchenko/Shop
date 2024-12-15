@@ -9,9 +9,7 @@ import com.clozex.shop.mapper.BookMapper;
 import com.clozex.shop.model.Book;
 import com.clozex.shop.repository.book.BookRepository;
 import com.clozex.shop.repository.book.BookSpecificationBuilder;
-import com.clozex.shop.repository.cart.CartItemRepository;
 import com.clozex.shop.service.BookService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +22,6 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final BookMapper bookMapper;
     private final BookSpecificationBuilder bookSpecificationBuilder;
-    private final CartItemRepository cartItemRepository;
 
     @Override
     public BookDto save(CreateBookRequestDto requestDto) {
@@ -47,9 +44,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    @Transactional
     public void deleteById(Long id) {
-        cartItemRepository.deleteByBookId(id);
         bookRepository.deleteById(id);
     }
 

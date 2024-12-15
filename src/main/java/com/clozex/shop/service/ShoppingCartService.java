@@ -6,7 +6,6 @@ import com.clozex.shop.dto.cart.ShoppingCartDto;
 import com.clozex.shop.model.User;
 
 public interface ShoppingCartService {
-
     ShoppingCartDto addCartItem(User user, CreateItemDto request);
 
     ShoppingCartDto getShoppingCart(User user);

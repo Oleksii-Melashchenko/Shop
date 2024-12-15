@@ -48,6 +48,7 @@ public class CartController {
     @PutMapping("/items/{cartItemId}")
     @Operation(summary = "Updating book quantity")
     @PreAuthorize("hasRole('USER')")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public ShoppingCartDto updateQuantity(@PathVariable Long cartItemId,
                                           @RequestBody @Valid CartItemUpdateDto request,
                                           Authentication authentication) {

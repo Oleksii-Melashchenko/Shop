@@ -33,12 +33,15 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Transactional
     public ShoppingCartDto addCartItem(User user, CreateItemDto request) {
         ShoppingCart shoppingCart = getShoppingCartOrCreate(user);
+        Book book = bookRepository.findById(request.bookId())
+                .orElseThrow(() -> new EntityNotFoundException("Book not found: "
+                        + request.bookId()));
         CartItem cartItem = shoppingCart.getCartItems().stream()
                 .filter(item -> item.getBook().getId().equals(request.bookId()))
                 .findFirst()
                 .map(existingItem -> updateCartItem(existingItem, request.quantity()))
-                .orElseGet(() -> createCartItem(request, shoppingCart));
-        cartItemRepository.save(cartItem);
+                .orElseGet(() -> createCartItem(request, shoppingCart, book));
+        shoppingCart.getCartItems().add(cartItem);
         return shoppingCartMapper.toDto(shoppingCartRepository.save(shoppingCart));
     }
 
@@ -54,13 +57,18 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         CartItem cartItem = cartItemRepository.findById(itemId)
                 .orElseThrow(() -> new EntityNotFoundException("CartItem not found " + itemId));
         cartItem.setQuantity(request.quantity());
-        cartItemRepository.save(cartItem);
+        shoppingCartRepository.save(cartItem.getShoppingCart());
         return shoppingCartMapper.toDto(cartItem.getShoppingCart());
     }
 
     @Override
+    @Transactional
     public void deleteItem(Long id) {
-        cartItemRepository.deleteById(id);
+        CartItem cartItem = cartItemRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("CartItem not found " + id));
+        ShoppingCart shoppingCart = cartItem.getShoppingCart();
+        shoppingCart.getCartItems().remove(cartItem);
+        shoppingCartRepository.save(shoppingCart);
     }
 
     private ShoppingCart getShoppingCartOrCreate(User user) {
@@ -77,10 +85,7 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         return cartItem;
     }
 
-    private CartItem createCartItem(CreateItemDto request, ShoppingCart shoppingCart) {
-        Book book = bookRepository.findById(request.bookId())
-                .orElseThrow(() -> new EntityNotFoundException("Book not found "
-                        + request.bookId()));
+    private CartItem createCartItem(CreateItemDto request, ShoppingCart shoppingCart, Book book) {
         CartItem cartItem = cartItemMapper.toModel(request);
         cartItem.setBook(book);
         cartItem.setShoppingCart(shoppingCart);
