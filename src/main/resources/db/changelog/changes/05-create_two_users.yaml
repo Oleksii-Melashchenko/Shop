@@ -38,7 +38,7 @@ databaseChangeLog:
                   value: admin@example.com
               - column:
                   name: password
-                  value: $2a$10$KmppU3ONvsZbOYfdfLvUU.bHPAgAZk6G7U8m9.O2RG5ywR8nMAbY6
+                  value: $2a$10$0wcEOFI0436a4vuD59zEFOHwnzDbpCcRnd11HTOngm5ObmJaH3ueW
               - column:
                   name: first_name
                   value: Admin
@@ -62,7 +62,7 @@ databaseChangeLog:
                   value: user@example.com
               - column:
                   name: password
-                  value: $2a$10$KmppU3ONvsZbOYfdfLvUU.bHPAgAZk6G7U8m9.O2RG5ywR8nMAbY6
+                  value: $2a$10$0wcEOFI0436a4vuD59zEFOHwnzDbpCcRnd11HTOngm5ObmJaH3ueW
               - column:
                   name: first_name
                   value: User

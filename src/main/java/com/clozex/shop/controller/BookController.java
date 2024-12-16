@@ -79,6 +79,7 @@ public class BookController {
     @PutMapping("/{id}")
     @Operation(summary = "Updating book in db by id")
     @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public BookDto updateBookById(@PathVariable Long id,
                                   @RequestBody CreateBookRequestDto requestDto) {
         return bookService.updateById(id, requestDto);
