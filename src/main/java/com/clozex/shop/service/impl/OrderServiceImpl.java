@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class OrderServiceImpl implements OrderService {
     private final ShoppingCartRepository shoppingCartRepository;
     private final ShoppingCartService shoppingCartService;
@@ -37,7 +38,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemMapper orderItemMapper;
     private final OrderItemRepository orderItemRepository;
 
-    @Transactional
     @Override
     public OrderDto createOrder(User user, CreateOrderDto request) {
         Order order = initOrder(user, request.shippingAddress());
@@ -60,14 +60,22 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderItemDto> getItems(User user, Long orderId) {
-        Order order = isAdmin(user)
-                ? orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Order not found with id: " + orderId))
-                : orderRepository.findByIdAndUserId(orderId, user.getId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Order not found with id: " + orderId + " for user: " + user.getId()));
+    public List<OrderItemDto> getItemsForAdmin(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with id: "
+                        + orderId)
+                );
+        return order.getOrderItems().stream()
+                .map(orderItemMapper::toDto)
+                .toList();
+    }
+
+    @Override
+    public List<OrderItemDto> getItemsForUser(User user, Long orderId) {
+        Order order = orderRepository.findByIdAndUserId(orderId, user.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Order not found with id: "
+                        + orderId + " for user: "
+                        + user.getId()));
 
         return order.getOrderItems().stream()
                 .map(orderItemMapper::toDto)
@@ -88,7 +96,8 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public OrderDto updateOrderStatus(Long orderId, UpdateOrderStatusDto request) {
         Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Order not found by id: "
+                        + orderId));
         order.setStatus(request.status());
         orderRepository.save(order);
         return orderMapper.toDto(order);
@@ -107,10 +116,12 @@ public class OrderServiceImpl implements OrderService {
         return order;
     }
 
-    private ShoppingCart getShoppingCartForUser(User user) {
-        return shoppingCartRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException("Can`t find cart for user "
-                        + user.getId()));
+    public ShoppingCart getShoppingCartForUser(User user) {
+        return shoppingCartRepository.findByUserWithCartItems(user)
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Shopping cart not found for user id: "
+                        + user.getId())
+                );
     }
 
     private BigDecimal calculateTotalAndAddItems(Order order, ShoppingCart shoppingCart) {

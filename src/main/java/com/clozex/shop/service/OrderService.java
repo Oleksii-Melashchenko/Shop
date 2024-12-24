@@ -14,7 +14,9 @@ public interface OrderService {
 
     Page<OrderDto> getOrders(User user, Pageable pageable);
 
-    List<OrderItemDto> getItems(User user, Long orderId);
+    List<OrderItemDto> getItemsForAdmin(Long orderId);
+
+    List<OrderItemDto> getItemsForUser(User user, Long orderId);
 
     OrderItemDto getItem(User user, Long orderId, Long itemId);
 

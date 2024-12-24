@@ -50,12 +50,19 @@ public class OrderController {
         return orderService.getOrders((User) authentication.getPrincipal(), pageable);
     }
 
+    @GetMapping("/admin/{orderId}/items")
+    @Operation(summary = "Getting items for order from db as admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<OrderItemDto> getItemsForAdmin(@PathVariable Long orderId) {
+        return orderService.getItemsForAdmin(orderId);
+    }
+
     @GetMapping("/{orderId}/items")
-    @Operation(summary = "Getting items for order from db")
+    @Operation(summary = "Getting items for order from db as user")
     @PreAuthorize("hasRole('USER')")
-    public List<OrderItemDto> getItems(@PathVariable Long orderId,
-                                       Authentication authentication) {
-        return orderService.getItems((User) authentication.getPrincipal(), orderId);
+    public List<OrderItemDto> getItemsForUser(@PathVariable Long orderId,
+                                              Authentication authentication) {
+        return orderService.getItemsForUser((User) authentication.getPrincipal(), orderId);
     }
 
     @GetMapping("/{orderId}/items/{itemId}")
