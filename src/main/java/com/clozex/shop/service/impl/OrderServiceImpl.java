@@ -75,6 +75,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public OrderDto getOrderById(Long orderId) {
+        return orderMapper.toDto(orderRepository.findById(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Order not found")));
+    }
+
+    @Override
     public OrderItemDto getItem(User user, Long orderId, Long itemId) {
         return orderItemRepository.findByOrderIdAndId(orderId, itemId);
     }
@@ -104,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
     private ShoppingCart getShoppingCartForUser(User user) {
         return shoppingCartRepository.findByUserId(user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Can`t find cart for user "
-                        + user));
+                        + user.getId()));
     }
 
     private BigDecimal calculateTotalAndAddItems(Order order, ShoppingCart shoppingCart) {

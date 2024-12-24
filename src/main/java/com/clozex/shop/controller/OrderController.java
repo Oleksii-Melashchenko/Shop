@@ -83,4 +83,11 @@ public class OrderController {
     public void deleteOrder(@PathVariable Long orderId) {
         orderService.deleteOrder(orderId);
     }
+
+    @GetMapping("/{orderId}")
+    @Operation(summary = "Getting order from db by id")
+    @PreAuthorize("hasRole('ADMIN')")
+    public OrderDto getOrder(@PathVariable Long orderId) {
+        return orderService.getOrderById(orderId);
+    }
 }

@@ -7,7 +7,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(config = MapperConfig.class, unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(config = MapperConfig.class, unmappedTargetPolicy = ReportingPolicy.IGNORE,
+        uses = OrderItemMapper.class)
 public interface OrderMapper {
     @Mapping(target = "userId", source = "user.id")
     @Mapping(target = "createdAt", source = "orderDate")
