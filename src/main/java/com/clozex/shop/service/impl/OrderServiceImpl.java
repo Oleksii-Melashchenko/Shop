@@ -11,6 +11,7 @@ import com.clozex.shop.mapper.OrderMapper;
 import com.clozex.shop.model.CartItem;
 import com.clozex.shop.model.Order;
 import com.clozex.shop.model.OrderItem;
+import com.clozex.shop.model.RoleName;
 import com.clozex.shop.model.ShoppingCart;
 import com.clozex.shop.model.Status;
 import com.clozex.shop.model.User;
@@ -144,6 +145,6 @@ public class OrderServiceImpl implements OrderService {
 
     private boolean isAdmin(User user) {
         return user.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
+                .anyMatch(authority -> authority.getAuthority().equals(RoleName.ROLE_ADMIN.name()));
     }
 }
