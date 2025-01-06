@@ -1,32 +1,5 @@
 package com.clozex.shop.service.book;
 
-import com.clozex.shop.dto.book.BookDto;
-import com.clozex.shop.dto.book.BookDtoWithoutCategoryIds;
-import com.clozex.shop.dto.book.CreateBookRequestDto;
-import com.clozex.shop.exception.EntityNotFoundException;
-import com.clozex.shop.mapper.BookMapper;
-import com.clozex.shop.model.Book;
-import com.clozex.shop.model.Category;
-import com.clozex.shop.repository.book.BookRepository;
-import com.clozex.shop.service.impl.BookServiceImpl;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -38,6 +11,32 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+
+import com.clozex.shop.dto.book.BookDto;
+import com.clozex.shop.dto.book.BookDtoWithoutCategoryIds;
+import com.clozex.shop.dto.book.CreateBookRequestDto;
+import com.clozex.shop.exception.EntityNotFoundException;
+import com.clozex.shop.mapper.BookMapper;
+import com.clozex.shop.model.Book;
+import com.clozex.shop.model.Category;
+import com.clozex.shop.repository.book.BookRepository;
+import com.clozex.shop.service.impl.BookServiceImpl;
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class BookServiceImplTest {
