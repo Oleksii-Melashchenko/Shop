@@ -258,6 +258,7 @@ class BookServiceImplTest {
         assertThrows(EntityNotFoundException.class,
                 () -> bookService.updateById(INCORRECT_BOOK_ID, updatedRequestDto));
     }
+
     @Test
     @DisplayName("Find all books by category id")
     void findAllBooksByCategoryId_ExistingCategory_ReturnsBooks() {
@@ -266,15 +267,6 @@ class BookServiceImplTest {
         Pageable pageable = Pageable.unpaged();
         Page<Book> bookPage = new PageImpl<>(books, pageable, books.size());
         when(bookRepository.findAllByCategoryId(categoryId, pageable)).thenReturn(bookPage);
-        List<BookDtoWithoutCategoryIds> expectedDtoList = books.stream()
-                .map(book -> new BookDtoWithoutCategoryIds(book.getId(),
-                        book.getTitle(),
-                        book.getAuthor(),
-                        book.getIsbn(),
-                        book.getPrice(),
-                        book.getDescription(),
-                        book.getCoverImage()))
-                .toList();
         when(bookMapper.toWithoutCategoryIdDto(any(Book.class))).thenAnswer(invocation -> {
             Book book = invocation.getArgument(0);
             return new BookDtoWithoutCategoryIds(book.getId(),
@@ -285,14 +277,25 @@ class BookServiceImplTest {
                     book.getDescription(),
                     book.getCoverImage());
         });
+        List<BookDtoWithoutCategoryIds> expectedDtoList = books.stream()
+                .map(book -> new BookDtoWithoutCategoryIds(book.getId(),
+                        book.getTitle(),
+                        book.getAuthor(),
+                        book.getIsbn(),
+                        book.getPrice(),
+                        book.getDescription(),
+                        book.getCoverImage()))
+                .toList();
 
         //when
-        Page<BookDtoWithoutCategoryIds> actual = bookService.getBooksByCategoryId(categoryId, pageable);
+        Page<BookDtoWithoutCategoryIds> actual = bookService.getBooksByCategoryId(categoryId,
+                pageable);
 
         //then
         assertNotNull(actual, "Found books is null");
         assertFalse(actual.getContent().isEmpty(), "Found books list is empty");
-        assertEquals(expectedDtoList.size(), actual.getContent().size(), "Number of books doesn't match");
+        assertEquals(expectedDtoList.size(), actual.getContent().size(),
+                "Number of books doesn't match");
         verify(bookRepository, times(1)).findAllByCategoryId(categoryId, pageable);
         verify(bookMapper, times(books.size())).toWithoutCategoryIdDto(any(Book.class));
         verifyNoMoreInteractions(bookRepository, bookMapper);
@@ -308,7 +311,8 @@ class BookServiceImplTest {
         when(bookRepository.findAllByCategoryId(categoryId, pageable)).thenReturn(bookPage);
 
         // when
-        Page<BookDtoWithoutCategoryIds> actual = bookService.getBooksByCategoryId(categoryId, pageable);
+        Page<BookDtoWithoutCategoryIds> actual = bookService.getBooksByCategoryId(categoryId,
+                pageable);
 
         // then
         assertNotNull(actual, "Found books is null");
