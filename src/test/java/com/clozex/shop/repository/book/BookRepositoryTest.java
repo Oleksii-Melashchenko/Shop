@@ -1,5 +1,7 @@
 package com.clozex.shop.repository.book;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import com.clozex.shop.model.Book;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,8 +11,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.jdbc.Sql;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -53,11 +53,8 @@ class BookRepositoryTest {
     @Test
     @DisplayName("Find all books by null category id")
     void findAllBooksByCategoryId_NullCategory_ReturnsEmptyPage() {
-        // given
-        Long categoryId = null;
-
         // when
-        Page<Book> books = bookRepository.findAllByCategoryId(categoryId, Pageable.unpaged());
+        Page<Book> books = bookRepository.findAllByCategoryId(null, Pageable.unpaged());
 
         // then
         assertEquals(0, books.getContent().size());
