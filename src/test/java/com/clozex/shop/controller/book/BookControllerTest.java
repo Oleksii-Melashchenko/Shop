@@ -1,9 +1,12 @@
 package com.clozex.shop.controller.book;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder.reflectionEquals;
 
 import com.clozex.shop.dto.book.BookDto;
 import com.clozex.shop.dto.book.BookDtoWithoutCategoryIds;
@@ -20,7 +23,6 @@ import java.util.Set;
 import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +38,6 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class BookControllerTest {
@@ -103,19 +104,16 @@ class BookControllerTest {
 
     @WithMockUser(roles = {"ADMIN"})
     @Test
-    @DisplayName("Check createBook endpoint by valid request")
+    @DisplayName("Creating book with valid requestDto")
     void createBook_validRequestDto_ReturnBookDto() throws Exception {
-        CreateBookRequestDto requestDto = new CreateBookRequestDto();
-        requestDto.setTitle(TEST_TITLE);
-        requestDto.setAuthor(TEST_AUTHOR);
-        requestDto.setIsbn(TEST_ISBN);
-        requestDto.setPrice(TEST_PRICE);
-        requestDto.setCategoryIds(TEST_CATEGORIES);
+        //given
+        CreateBookRequestDto requestDto = createDefaultRequestDto();
 
         BookDto expect = createDefaultBookDto();
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
 
+        //when
         MvcResult result = mockMvc.perform(post("/books")
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -124,15 +122,18 @@ class BookControllerTest {
 
         BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 BookDto.class);
-        Assertions.assertNotNull(actual);
-        EqualsBuilder.reflectionEquals(expect, actual, "id");
+
+        //then
+        assertNotNull(actual);
+        reflectionEquals(expect, actual, "id");
     }
 
     @WithMockUser()
     @Test
-    @DisplayName("Check functionality of getAllBooks method")
-    void getAllBooks_DbWithData_ReturnPageOfBookDtoWithoutCategoryIds()
+    @DisplayName("Getting all books")
+    void getAllBooks_ReturnPageOfBookDtoWithoutCategoryIds()
             throws Exception {
+        //when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/books")
                         .param(PAGE_PARAM_NAME, PAGE_PARAM_VALUE)
                         .param(SIZE_PARAM_NAME, SIZE_PARAM_VALUE)
@@ -141,44 +142,50 @@ class BookControllerTest {
                 .andReturn();
 
         JsonNode root = objectMapper.readTree(result.getResponse().getContentAsString());
+
         List<BookDtoWithoutCategoryIds> actualContent = objectMapper.readValue(
                 root.get("content").toString(),
                 new TypeReference<>() {
                 }
         );
 
-        Assertions.assertNotNull(actualContent);
-        Assertions.assertFalse(actualContent.isEmpty());
-        Assertions.assertEquals(EXPECTED_LENGTH, actualContent.size());
+        //then
+        assertNotNull(actualContent);
+        assertFalse(actualContent.isEmpty());
+        assertEquals(EXPECTED_LENGTH, actualContent.size());
     }
 
     @WithMockUser(roles = {"ADMIN"})
     @Test
-    @DisplayName("Check functionality of deleteBook method")
+    @DisplayName("Deleting book with valid id")
     void deleteBook_ValidData_ReturnNoContentStatus() throws Exception {
+        //when
         mockMvc.perform(MockMvcRequestBuilders.delete("/books/{id}", TEST_BOOK_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent())
                 .andReturn();
+
+        //then
         assertFalse(bookRepository.existsById(TEST_BOOK_ID));
     }
 
     @WithMockUser(roles = {"ADMIN"})
     @Test
-    @DisplayName("Check functionality of updateBook method")
+    @DisplayName("Updating book with valid requestDto")
     void update_ValidData_ReturnBookDto() throws Exception {
+        //given
         CreateBookRequestDto requestDto = createDefaultRequestDto();
 
-        BookDto expect = new BookDto();
-        expect.setTitle(ALTERNATIVE_TEST_TITLE);
-        expect.setAuthor(ALTERNATIVE_TEST_AUTHOR);
-        expect.setIsbn(ALTERNATIVE_TEST_ISBN);
-        expect.setPrice(ALTERNATIVE_TEST_PRICE);
-        expect.setCategoryIds(ALTERNATIVE_TEST_CATEGORIES);
-        expect.setId(TEST_BOOK_ID);
+        BookDto expect = new BookDto()
+                .setTitle(ALTERNATIVE_TEST_TITLE)
+                .setAuthor(ALTERNATIVE_TEST_AUTHOR)
+                .setIsbn(ALTERNATIVE_TEST_ISBN)
+                .setPrice(ALTERNATIVE_TEST_PRICE)
+                .setCategoryIds(ALTERNATIVE_TEST_CATEGORIES)
+                .setId(TEST_BOOK_ID);
 
         String jsonRequest = objectMapper.writeValueAsString(requestDto);
-
+        //when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.put("/books/{id}", TEST_BOOK_ID)
                         .content(jsonRequest)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -187,16 +194,20 @@ class BookControllerTest {
 
         BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 BookDto.class);
-        Assertions.assertNotNull(actual);
-        EqualsBuilder.reflectionEquals(expect, actual);
+
+        //then
+        assertNotNull(actual);
+        reflectionEquals(expect, actual);
     }
 
     @WithMockUser()
     @Test
-    @DisplayName("Check functionality of findBookById method")
+    @DisplayName("Getting book by id with valid id")
     void findBookById_ValidId_ReturnBookDto() throws Exception {
+        //given
         BookDto expect = createDefaultBookDto();
 
+        //when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/books/{id}", TEST_BOOK_ID)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -204,28 +215,28 @@ class BookControllerTest {
 
         BookDto actual = objectMapper.readValue(result.getResponse().getContentAsString(),
                 BookDto.class);
-        Assertions.assertNotNull(actual);
-        EqualsBuilder.reflectionEquals(expect, actual);
+
+        //then
+        assertNotNull(actual);
+        reflectionEquals(expect, actual);
     }
 
     private BookDto createDefaultBookDto() {
-        BookDto bookDto = new BookDto();
-        bookDto.setTitle(TEST_TITLE);
-        bookDto.setAuthor(TEST_AUTHOR);
-        bookDto.setIsbn(TEST_ISBN);
-        bookDto.setPrice(TEST_PRICE);
-        bookDto.setCategoryIds(TEST_CATEGORIES);
-        bookDto.setId(TEST_BOOK_ID);
-        return bookDto;
+        return new BookDto()
+        .setTitle(TEST_TITLE)
+        .setAuthor(TEST_AUTHOR)
+        .setIsbn(TEST_ISBN)
+        .setPrice(TEST_PRICE)
+        .setCategoryIds(TEST_CATEGORIES)
+        .setId(TEST_BOOK_ID);
     }
 
     private CreateBookRequestDto createDefaultRequestDto() {
-        CreateBookRequestDto requestDto = new CreateBookRequestDto();
-        requestDto.setTitle(TEST_TITLE);
-        requestDto.setAuthor(TEST_AUTHOR);
-        requestDto.setIsbn(TEST_ISBN);
-        requestDto.setPrice(TEST_PRICE);
-        requestDto.setCategoryIds(TEST_CATEGORIES);
-        return requestDto;
+        return new CreateBookRequestDto()
+        .setTitle(TEST_TITLE)
+        .setAuthor(TEST_AUTHOR)
+        .setIsbn(TEST_ISBN)
+        .setPrice(TEST_PRICE)
+        .setCategoryIds(TEST_CATEGORIES);
     }
 }

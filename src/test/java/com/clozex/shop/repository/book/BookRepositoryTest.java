@@ -53,11 +53,8 @@ class BookRepositoryTest {
     @Test
     @DisplayName("Find all books by null category id")
     void findAllBooksByCategoryId_NullCategory_ReturnsEmptyPage() {
-        // given
-        Long categoryId = null;
-
         // when
-        Page<Book> books = bookRepository.findAllByCategoryId(categoryId, Pageable.unpaged());
+        Page<Book> books = bookRepository.findAllByCategoryId(null, Pageable.unpaged());
 
         // then
         assertEquals(0, books.getContent().size());

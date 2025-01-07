@@ -127,7 +127,9 @@ class BookServiceImplTest {
     void saveBook_WhenValidBookPassed_BookIsSaved() {
         //given
         when(bookRepository.save(book1)).thenReturn(book1);
+
         when(bookMapper.toDto(book1)).thenReturn(expectedDto);
+
         when(bookMapper.toModel(requestDto)).thenReturn(book1);
 
         //when
@@ -136,9 +138,11 @@ class BookServiceImplTest {
         //then
         assertNotNull(actual, "Saved book is null");
         assertEquals(expectedDto, actual, "Saved book is not equal to expected");
+
         verify(bookMapper, times(1)).toModel(requestDto);
         verify(bookRepository, times(1)).save(book1);
         verify(bookMapper, times(1)).toDto(book1);
+
         verifyNoMoreInteractions(bookMapper, bookRepository);
     }
 
@@ -147,6 +151,7 @@ class BookServiceImplTest {
     void findAllBooks_WithValidPageable_ShouldReturnPageOfBookDto() {
         //given
         Pageable pageable = PageRequest.of(0, 10);
+
         Page<Book> bookPage = new PageImpl<>(books, pageable, books.size());
 
         List<BookDto> expectedDtoList = books.stream()
@@ -157,7 +162,9 @@ class BookServiceImplTest {
                         .setPrice(book.getPrice())
                         .setIsbn(book.getIsbn()))
                 .toList();
+
         when(bookRepository.findAll(pageable)).thenReturn(bookPage);
+
         when(bookMapper.toDto(any(Book.class))).thenAnswer(invocation -> {
             Book book = invocation.getArgument(0);
             return new BookDto()
@@ -167,6 +174,7 @@ class BookServiceImplTest {
                     .setPrice(book.getPrice())
                     .setIsbn(book.getIsbn());
         });
+
         Page<BookDto> expectedDtoPage = new PageImpl<>(expectedDtoList, pageable, books.size());
 
         //when
@@ -179,8 +187,10 @@ class BookServiceImplTest {
         assertEquals(expectedDtoPage.getTotalElements(), actual.getTotalElements(),
                 "Total elements don`t match");
         assertEquals(expectedDtoPage.getPageable(), actual.getPageable(), "Pageable doesn`t match");
+
         verify(bookRepository, times(1)).findAll(pageable);
         verify(bookMapper, times(books.size())).toDto(any(Book.class));
+
         verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
@@ -189,6 +199,7 @@ class BookServiceImplTest {
     void findBookById_ValidId_BookIsFound() {
         //given
         when(bookRepository.findById(FIRST_BOOK_ID)).thenReturn(Optional.of(book1));
+
         when(bookMapper.toDto(book1)).thenReturn(expectedDto);
 
         //when
@@ -197,8 +208,10 @@ class BookServiceImplTest {
         //then
         assertNotNull(actual, "Found book is null");
         assertEquals(expectedDto, actual, "Found book is not equal to expected");
+
         verify(bookRepository, times(1)).findById(FIRST_BOOK_ID);
         verify(bookMapper, times(1)).toDto(book1);
+
         verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
@@ -222,6 +235,7 @@ class BookServiceImplTest {
 
         //then
         verify(bookRepository, times(1)).deleteById(FIRST_BOOK_ID);
+
         verifyNoMoreInteractions(bookRepository);
     }
 
@@ -230,8 +244,11 @@ class BookServiceImplTest {
     void updateBookById_BookIsUpdatedSuccessfully() {
         // given
         when(bookRepository.findById(FIRST_BOOK_ID)).thenReturn(Optional.of(book1));
+
         doNothing().when(bookMapper).updateBookFromDto(updatedRequestDto, book1);
+
         when(bookRepository.save(book1)).thenReturn(updatedBook);
+
         when(bookMapper.toDto(updatedBook)).thenReturn(updatedExpectedDto);
 
         // when
@@ -240,10 +257,12 @@ class BookServiceImplTest {
         // then
         assertNotNull(actual, "Updated book is null");
         assertEquals(updatedExpectedDto, actual, "Updated book is not equal to expected");
+
         verify(bookRepository, times(1)).findById(FIRST_BOOK_ID);
         verify(bookMapper, times(1)).updateBookFromDto(updatedRequestDto, book1);
         verify(bookRepository, times(1)).save(book1);
         verify(bookMapper, times(1)).toDto(updatedBook);
+
         verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
@@ -263,9 +282,13 @@ class BookServiceImplTest {
     void findAllBooksByCategoryId_ExistingCategory_ReturnsBooks() {
         //given
         Long categoryId = 1L;
+
         Pageable pageable = Pageable.unpaged();
+
         Page<Book> bookPage = new PageImpl<>(books, pageable, books.size());
+
         when(bookRepository.findAllByCategoryId(categoryId, pageable)).thenReturn(bookPage);
+
         when(bookMapper.toWithoutCategoryIdDto(any(Book.class))).thenAnswer(invocation -> {
             Book book = invocation.getArgument(0);
             return new BookDtoWithoutCategoryIds(book.getId(),
@@ -276,6 +299,7 @@ class BookServiceImplTest {
                     book.getDescription(),
                     book.getCoverImage());
         });
+
         List<BookDtoWithoutCategoryIds> expectedDtoList = books.stream()
                 .map(book -> new BookDtoWithoutCategoryIds(book.getId(),
                         book.getTitle(),
@@ -295,8 +319,10 @@ class BookServiceImplTest {
         assertFalse(actual.getContent().isEmpty(), "Found books list is empty");
         assertEquals(expectedDtoList.size(), actual.getContent().size(),
                 "Number of books doesn't match");
+
         verify(bookRepository, times(1)).findAllByCategoryId(categoryId, pageable);
         verify(bookMapper, times(books.size())).toWithoutCategoryIdDto(any(Book.class));
+
         verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
@@ -305,8 +331,11 @@ class BookServiceImplTest {
     void findAllBooksByCategoryId_NonExistentCategory_ReturnsEmptyPage() {
         // given
         Long categoryId = 100L;
+
         Pageable pageable = Pageable.unpaged();
+
         Page<Book> bookPage = new PageImpl<>(Collections.emptyList(), pageable, 0);
+
         when(bookRepository.findAllByCategoryId(categoryId, pageable)).thenReturn(bookPage);
 
         // when
@@ -317,7 +346,9 @@ class BookServiceImplTest {
         assertNotNull(actual, "Found books is null");
         assertTrue(actual.getContent().isEmpty(), "Found books list is not empty");
         assertEquals(0, actual.getContent().size(), "Number of books doesn't match");
+
         verify(bookRepository, times(1)).findAllByCategoryId(categoryId, pageable);
+
         verifyNoMoreInteractions(bookRepository);
     }
 
