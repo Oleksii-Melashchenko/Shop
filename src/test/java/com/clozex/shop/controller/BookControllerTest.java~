@@ -1,0 +1,126 @@
+package com.clozex.shop.controller;
+
+import static org.hamcrest.Matchers.hasSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.clozex.shop.dto.book.BookDto;
+import com.clozex.shop.dto.book.BookDtoWithoutCategoryIds;
+import com.clozex.shop.dto.book.CreateBookRequestDto;
+import com.clozex.shop.service.BookService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.test.web.servlet.MockMvc;
+import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
+
+@WebMvcTest(BookController.class)
+class BookControllerTest {
+
+    protected static MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private BookService bookService;
+
+    private static final Long TEST_BOOK_ID = 1L;
+    private static final String TEST_TITLE = "title1";
+    private static final String TEST_AUTHOR = "Author1";
+    private static final String TEST_ISBN = "111";
+    private static final BigDecimal TEST_PRICE = BigDecimal.valueOf(11);
+    private static final Set<Long> TEST_CATEGORIES = Set.of(1L);
+    private static final String TEST_DESCRIPTION = "description1";
+    private static final String TEST_COVER_IMAGE = "coverImage1";
+    private static final Long ALTERNATIVE_BOOK_ID = 2L;
+    private static final String ALTERNATIVE_BOOK_TITLE = "title2";
+    private static final String ALTERNATIVE_BOOK_AUTHOR = "Author2";
+    private static final String ALTERNATIVE_BOOK_ISBN = "222";
+    private static final BigDecimal ALTERNATIVE_BOOK_PRICE = BigDecimal.valueOf(22);
+    private static final Set<Long> ALTERNATIVE_BOOK_CATEGORIES = Set.of(2L);
+    private static final String ALTERNATIVE_TEST_DESCRIPTION = "description2";
+    private static final String ALTERNATIVE_TEST_COVER_IMAGE = "coverImage2";
+    private static final int EXPECTED_LENGTH = 2;
+    private static final String PAGE_PARAM_NAME = "page";
+    private static final String PAGE_PARAM_VALUE = "0";
+    private static final String SIZE_PARAM_NAME = "size";
+    private static final String SIZE_PARAM_VALUE = "2";
+    private static CreateBookRequestDto requestDto;
+    private static BookDto mockBookDto;
+    private static List<BookDtoWithoutCategoryIds> mockBookList;
+
+
+    @BeforeEach
+    void setUp() {
+        requestDto.setTitle(TEST_TITLE)
+        .setAuthor(TEST_AUTHOR)
+        .setIsbn(TEST_ISBN)
+        .setPrice(TEST_PRICE)
+        .setCategoryIds(TEST_CATEGORIES);
+        mockBookDto = createDefaultBookDto();
+        mockBookList = List.of(new BookDtoWithoutCategoryIds(
+            TEST_BOOK_ID,
+            TEST_TITLE,
+            TEST_AUTHOR,
+            TEST_ISBN,
+            TEST_PRICE,
+            TEST_DESCRIPTION,
+            TEST_COVER_IMAGE
+        ), new BookDtoWithoutCategoryIds(
+            ALTERNATIVE_BOOK_ID,
+            ALTERNATIVE_BOOK_TITLE,
+            ALTERNATIVE_BOOK_AUTHOR,
+            ALTERNATIVE_BOOK_ISBN,
+            ALTERNATIVE_BOOK_PRICE,
+            ALTERNATIVE_TEST_DESCRIPTION,
+            ALTERNATIVE_TEST_COVER_IMAGE
+        ));
+    }
+
+    @Test
+    @DisplayName("Find all books")
+    void getAllBooks_ReturnsPageOfBooks() throws Exception {
+        //given
+        Page mockPage = mock(Page.class);
+        when(bookService.findAll(any(Pageable.class))).thenReturn(mockPage);
+        // when & then
+        mockMvc.perform(get("/books")
+                        .param(PAGE_PARAM_NAME, PAGE_PARAM_VALUE)
+                        .param(SIZE_PARAM_NAME, SIZE_PARAM_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(EXPECTED_LENGTH)));
+    }
+
+    private BookDto createDefaultBookDto() {
+        return new BookDto()
+        .setTitle(TEST_TITLE)
+        .setAuthor(TEST_AUTHOR)
+        .setIsbn(TEST_ISBN)
+        .setPrice(TEST_PRICE)
+        .setCategoryIds(TEST_CATEGORIES)
+        .setId(TEST_BOOK_ID);
+    }
+
+}
