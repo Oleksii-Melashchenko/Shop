@@ -1,4 +1,4 @@
-package com.clozex.shop.controller.book;
+package com.clozex.shop.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

@@ -1,4 +1,4 @@
-package com.clozex.shop.service.book;
+package com.clozex.shop.service;
 
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -223,8 +223,8 @@ class BookServiceImplTest {
 
         //then
         assertThrows(EntityNotFoundException.class,
-                () -> bookService.getById(INCORRECT_BOOK_ID
-                ));
+                () -> bookService.getById(INCORRECT_BOOK_ID)
+        );
     }
 
     @Test
