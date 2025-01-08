@@ -7,8 +7,8 @@ import com.clozex.shop.mapper.CategoryMapper;
 import com.clozex.shop.model.Category;
 import com.clozex.shop.repository.category.CategoryRepository;
 import com.clozex.shop.service.CategoryService;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -25,10 +25,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Set<CategoryDto> findAll(Pageable pageable) {
+    public Page<CategoryDto> findAll(Pageable pageable) {
         return categoryRepository.findAll(pageable)
-                .map(categoryMapper::toDto)
-                .toSet();
+                .map(categoryMapper::toDto);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.clozex.shop.controller.book;
+package com.clozex.shop.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -52,11 +52,7 @@ class BookControllerTest {
     private static final String ALTERNATIVE_TEST_ISBN = "222";
     private static final BigDecimal ALTERNATIVE_TEST_PRICE = BigDecimal.valueOf(22);
     private static final Set<Long> ALTERNATIVE_TEST_CATEGORIES = Set.of(2L);
-    private static final int EXPECTED_LENGTH = 2;
-    private static final String PAGE_PARAM_NAME = "page";
-    private static final String PAGE_PARAM_VALUE = "0";
-    private static final String SIZE_PARAM_NAME = "size";
-    private static final String SIZE_PARAM_VALUE = "2";
+    private static final int EXPECTED_LENGTH = 5;
 
     private static MockMvc mockMvc;
 
@@ -135,8 +131,8 @@ class BookControllerTest {
             throws Exception {
         //when
         MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/books")
-                        .param(PAGE_PARAM_NAME, PAGE_PARAM_VALUE)
-                        .param(SIZE_PARAM_NAME, SIZE_PARAM_VALUE)
+                        .param("page", "0")
+                        .param("size", "10")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -223,20 +219,20 @@ class BookControllerTest {
 
     private BookDto createDefaultBookDto() {
         return new BookDto()
-        .setTitle(TEST_TITLE)
-        .setAuthor(TEST_AUTHOR)
-        .setIsbn(TEST_ISBN)
-        .setPrice(TEST_PRICE)
-        .setCategoryIds(TEST_CATEGORIES)
-        .setId(TEST_BOOK_ID);
+                .setTitle(TEST_TITLE)
+                .setAuthor(TEST_AUTHOR)
+                .setIsbn(TEST_ISBN)
+                .setPrice(TEST_PRICE)
+                .setCategoryIds(TEST_CATEGORIES)
+                .setId(TEST_BOOK_ID);
     }
 
     private CreateBookRequestDto createDefaultRequestDto() {
         return new CreateBookRequestDto()
-        .setTitle(TEST_TITLE)
-        .setAuthor(TEST_AUTHOR)
-        .setIsbn(TEST_ISBN)
-        .setPrice(TEST_PRICE)
-        .setCategoryIds(TEST_CATEGORIES);
+                .setTitle(TEST_TITLE)
+                .setAuthor(TEST_AUTHOR)
+                .setIsbn(TEST_ISBN)
+                .setPrice(TEST_PRICE)
+                .setCategoryIds(TEST_CATEGORIES);
     }
 }

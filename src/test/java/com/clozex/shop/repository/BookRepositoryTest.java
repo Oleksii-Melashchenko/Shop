@@ -1,8 +1,9 @@
-package com.clozex.shop.repository.book;
+package com.clozex.shop.repository;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.clozex.shop.model.Book;
+import com.clozex.shop.repository.book.BookRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
