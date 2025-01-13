@@ -65,6 +65,11 @@ This application supports CRUD (Create, Read, Update, Delete) operations, advanc
 To set up and run the project, please do the following:
 1. Install [Docker](https://www.docker.com/products/docker-desktop/) and run.
 2. Download or clone the project from GitHub repository.
+```bash
+git clone https://github.com/Oleksii-Melashchenko/Shop
+cd Shop
+```
+
 3. Set the necessary settings in *.env* file. You can use *.env.example* file as a hint.
 4. Build the project by command `mvn clean install`.
 5. Run the command `docker-compose up --build` to build and launch containers.
