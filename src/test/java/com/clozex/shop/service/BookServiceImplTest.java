@@ -21,6 +21,8 @@ import com.clozex.shop.model.Book;
 import com.clozex.shop.model.Category;
 import com.clozex.shop.repository.book.BookRepository;
 import com.clozex.shop.service.impl.BookServiceImpl;
+import com.clozex.shop.util.BookTestUtil;
+import com.clozex.shop.util.CategoryTestUtil;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -45,16 +47,21 @@ class BookServiceImplTest {
     private static final String FIRST_BOOK_NAME = "Book_1";
     private static final String FIRST_BOOK_AUTHOR = "Author_1";
     private static final String FIRST_BOOK_ISBN = "111";
+    private static final BigDecimal FIRST_BOOK_PRICE = BigDecimal.valueOf(20.00);
     private static final Long SECOND_BOOK_ID = 2L;
     private static final String SECOND_BOOK_NAME = "Book_2";
     private static final String SECOND_BOOK_AUTHOR = "Author_1";
     private static final String SECOND_BOOK_ISBN = "222";
+    private static final String UPDATED_BOOK_NAME = "Update_Book_1.1";
+    private static final String UPDATED_BOOK_AUTHOR = "Update_Author_1.1";
+    private static final BigDecimal UPDATED_BOOK_PRICE = BigDecimal.valueOf(35.00);
     private static final Long INCORRECT_BOOK_ID = 111L;
     private static final Long CATEGORY_ID = 1L;
     private static final String CATEGORY_NAME = "Category_1";
+    private static final String CATEGORY_DESCRIPTION = "Description_1";
     private static Category category;
-    private static Book book1;
     private static Book book2;
+    private static Book book1;
     private static Book updatedBook;
     private static BookDto expectedDto;
     private static BookDto updatedExpectedDto;
@@ -73,53 +80,50 @@ class BookServiceImplTest {
 
     @BeforeAll
     static void beforeAll() {
-        book1 = new Book().setId(FIRST_BOOK_ID)
-                .setTitle(FIRST_BOOK_NAME)
-                .setAuthor(FIRST_BOOK_AUTHOR)
-                .setPrice(BigDecimal.valueOf(20.00))
-                .setIsbn(FIRST_BOOK_ISBN);
+        book1 = BookTestUtil.createBook(FIRST_BOOK_ID,
+                FIRST_BOOK_NAME,
+                FIRST_BOOK_AUTHOR,
+                FIRST_BOOK_ISBN,
+                FIRST_BOOK_PRICE);
 
-        category = new Category().setId(CATEGORY_ID)
-                .setName(CATEGORY_NAME);
+        category = CategoryTestUtil.createCategory(CATEGORY_ID, CATEGORY_NAME,
+                CATEGORY_DESCRIPTION);
 
-        book2 = new Book().setId(SECOND_BOOK_ID)
-                .setTitle(SECOND_BOOK_NAME)
-                .setAuthor(SECOND_BOOK_AUTHOR)
-                .setPrice(BigDecimal.valueOf(25.00))
-                .setIsbn(SECOND_BOOK_ISBN)
-                .setCategories(Set.of(category));
+        book2 = BookTestUtil.createBookWithCategory(SECOND_BOOK_ID,
+                SECOND_BOOK_NAME,
+                SECOND_BOOK_AUTHOR,
+                SECOND_BOOK_ISBN,
+                Set.of(category));
 
-        requestDto = new CreateBookRequestDto()
-                .setTitle(FIRST_BOOK_NAME)
-                .setAuthor(FIRST_BOOK_AUTHOR)
-                .setPrice(BigDecimal.valueOf(20.00))
-                .setIsbn(FIRST_BOOK_ISBN);
+        requestDto = BookTestUtil.createBookRequestDto(FIRST_BOOK_NAME,
+                FIRST_BOOK_AUTHOR,
+                FIRST_BOOK_ISBN,
+                FIRST_BOOK_PRICE);
 
-        expectedDto = new BookDto().setId(FIRST_BOOK_ID)
-                .setTitle(FIRST_BOOK_NAME)
-                .setAuthor(FIRST_BOOK_AUTHOR)
-                .setPrice(BigDecimal.valueOf(20.00))
-                .setIsbn(FIRST_BOOK_ISBN);
+        expectedDto = BookTestUtil.createExpectedBookDto(FIRST_BOOK_ID,
+                FIRST_BOOK_NAME,
+                FIRST_BOOK_AUTHOR,
+                FIRST_BOOK_ISBN,
+                FIRST_BOOK_PRICE);
 
-        books = List.of(book1,book2);
+        books = List.of(book1, book2);
 
-        updatedBook = new Book().setId(FIRST_BOOK_ID)
-                .setTitle("Update_Book_1.1")
-                .setAuthor("Update_Author_1.1")
-                .setPrice(BigDecimal.valueOf(35.00))
-                .setIsbn("111");
+        updatedBook = BookTestUtil.createBook(FIRST_BOOK_ID,
+                UPDATED_BOOK_NAME,
+                UPDATED_BOOK_AUTHOR,
+                FIRST_BOOK_ISBN,
+                UPDATED_BOOK_PRICE);
 
-        updatedRequestDto = new CreateBookRequestDto()
-                .setTitle("Update_Book_1.1")
-                .setAuthor("Update_Author_1.1")
-                .setPrice(BigDecimal.valueOf(35.00))
-                .setIsbn("111");
+        updatedRequestDto = BookTestUtil.createBookRequestDto(UPDATED_BOOK_NAME,
+                UPDATED_BOOK_AUTHOR,
+                FIRST_BOOK_ISBN,
+                FIRST_BOOK_PRICE);
 
-        updatedExpectedDto = new BookDto().setId(FIRST_BOOK_ID)
-                .setTitle("Update_Book_1.1")
-                .setAuthor("Update_Author_1.1")
-                .setPrice(BigDecimal.valueOf(35.00))
-                .setIsbn("111");
+        updatedExpectedDto = BookTestUtil.createExpectedBookDto(FIRST_BOOK_ID,
+                UPDATED_BOOK_NAME,
+                UPDATED_BOOK_AUTHOR,
+                FIRST_BOOK_ISBN,
+                UPDATED_BOOK_PRICE);
     }
 
     @Test

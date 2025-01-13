@@ -91,7 +91,7 @@ class CategoryControllerTest {
         }
     }
 
-    @WithMockUser()
+    @WithMockUser(roles = {"USER"})
     @Test
     @DisplayName("Getting all categories")
     void getAllCategories_ReturnPageOfCategoryDto()
@@ -120,7 +120,7 @@ class CategoryControllerTest {
         assertEquals(3, actualContent.size());
     }
 
-    @WithMockUser()
+    @WithMockUser(roles = {"USER"})
     @Test
     @DisplayName("Getting all books by category id")
     void getAllBooksByCategoryId_ReturnPageOfBookDtoWithoutCategoryIds()
@@ -148,7 +148,7 @@ class CategoryControllerTest {
         assertEquals(3, actualContent.size());
     }
 
-    @WithMockUser()
+    @WithMockUser(roles = {"USER"})
     @Test
     @DisplayName("Getting category by id with valid id")
     void findCategoryById_ValidId_ReturnCategoryDto() throws Exception {

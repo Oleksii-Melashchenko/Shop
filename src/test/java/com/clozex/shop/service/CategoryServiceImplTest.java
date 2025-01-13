@@ -17,6 +17,7 @@ import com.clozex.shop.mapper.CategoryMapper;
 import com.clozex.shop.model.Category;
 import com.clozex.shop.repository.category.CategoryRepository;
 import com.clozex.shop.service.impl.CategoryServiceImpl;
+import com.clozex.shop.util.CategoryTestUtil;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
@@ -37,6 +38,8 @@ class CategoryServiceImplTest {
     private static final Long INCORRECT_CATEGORY_ID = 111L;
     private static final String CATEGORY_NAME = "Category_1";
     private static final String CATEGORY_DESCRIPTION = "Description_1";
+    private static final String UPDATED_CATEGORY_NAME = "Update_Category_1.1";
+    private static final String UPDATED_CATEGORY_DESCRIPTION = "Update_Description_1.1";
     private static Category category;
     private static Category category2;
     private static Category updatedCategory;
@@ -57,32 +60,31 @@ class CategoryServiceImplTest {
 
     @BeforeAll
     static void beforeAll() {
-        category = new Category().setId(CATEGORY_ID)
-                .setName(CATEGORY_NAME)
-                .setDescription(CATEGORY_DESCRIPTION);
-
-        requestDto = new CreateCategoryRequestDto(CATEGORY_NAME,
-                CATEGORY_DESCRIPTION);
-
-        expectedDto = new CategoryDto(CATEGORY_ID,
+        category = CategoryTestUtil.createCategory(CATEGORY_ID,
                 CATEGORY_NAME,
                 CATEGORY_DESCRIPTION);
 
-        categories = List.of(category,category2 = new Category()
-                .setId(2L)
-                .setName("Category_2")
-                .setDescription("Description_2")
-        );
+        requestDto = CategoryTestUtil.createCategoryRequestDto(CATEGORY_NAME,
+                CATEGORY_DESCRIPTION);
 
-        updatedCategory = new Category().setId(CATEGORY_ID)
-                .setName("Update_Category_1.1")
-                .setDescription("Update_Description_1.1");
+        expectedDto = CategoryTestUtil.createCategoryDto(CATEGORY_ID,
+                CATEGORY_NAME,
+                CATEGORY_DESCRIPTION);
 
-        updatedRequestDto = new CreateCategoryRequestDto("Update_Category_1.1",
-                "Update_Description_1.1");
+        categories = List.of(category,category2 = CategoryTestUtil.createCategory(2L,
+                "Category_2",
+                "Description_2"));
 
-        updatedExpectedDto = new CategoryDto(CATEGORY_ID, "Update_Category_1.1",
-                "Update_Description_1.1");
+        updatedCategory = CategoryTestUtil.createCategory(CATEGORY_ID,
+                UPDATED_CATEGORY_NAME,
+                UPDATED_CATEGORY_DESCRIPTION);
+
+        updatedRequestDto = CategoryTestUtil.createCategoryRequestDto(UPDATED_CATEGORY_NAME,
+                UPDATED_CATEGORY_DESCRIPTION);
+
+        updatedExpectedDto = CategoryTestUtil.createCategoryDto(CATEGORY_ID,
+        UPDATED_CATEGORY_NAME,
+        UPDATED_CATEGORY_DESCRIPTION);
     }
 
     @Test

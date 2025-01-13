@@ -124,7 +124,7 @@ class BookControllerTest {
         reflectionEquals(expect, actual, "id");
     }
 
-    @WithMockUser()
+    @WithMockUser(roles = {"USER"})
     @Test
     @DisplayName("Getting all books")
     void getAllBooks_ReturnPageOfBookDtoWithoutCategoryIds()
@@ -196,7 +196,7 @@ class BookControllerTest {
         reflectionEquals(expect, actual);
     }
 
-    @WithMockUser()
+    @WithMockUser(roles = {"USER"})
     @Test
     @DisplayName("Getting book by id with valid id")
     void findBookById_ValidId_ReturnBookDto() throws Exception {
