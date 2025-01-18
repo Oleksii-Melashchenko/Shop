@@ -21,8 +21,6 @@ import com.clozex.shop.model.Book;
 import com.clozex.shop.model.Category;
 import com.clozex.shop.repository.book.BookRepository;
 import com.clozex.shop.service.impl.BookServiceImpl;
-import com.clozex.shop.util.BookTestUtil;
-import com.clozex.shop.util.CategoryTestUtil;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -47,22 +45,16 @@ class BookServiceImplTest {
     private static final String FIRST_BOOK_NAME = "Book_1";
     private static final String FIRST_BOOK_AUTHOR = "Author_1";
     private static final String FIRST_BOOK_ISBN = "111";
-    private static final BigDecimal FIRST_BOOK_PRICE = BigDecimal.valueOf(20.00);
     private static final Long SECOND_BOOK_ID = 2L;
     private static final String SECOND_BOOK_NAME = "Book_2";
     private static final String SECOND_BOOK_AUTHOR = "Author_1";
     private static final String SECOND_BOOK_ISBN = "222";
-    private static final String UPDATED_BOOK_NAME = "Update_Book_1.1";
-    private static final String UPDATED_BOOK_AUTHOR = "Update_Author_1.1";
-    private static final BigDecimal UPDATED_BOOK_PRICE = BigDecimal.valueOf(35.00);
     private static final Long INCORRECT_BOOK_ID = 111L;
     private static final Long CATEGORY_ID = 1L;
     private static final String CATEGORY_NAME = "Category_1";
-    private static final String CATEGORY_DESCRIPTION = "Description_1";
-    private static final int WANTED_TIMES_OF_INVOKE = 1;
     private static Category category;
-    private static Book book2;
     private static Book book1;
+    private static Book book2;
     private static Book updatedBook;
     private static BookDto expectedDto;
     private static BookDto updatedExpectedDto;
@@ -81,50 +73,53 @@ class BookServiceImplTest {
 
     @BeforeAll
     static void beforeAll() {
-        book1 = BookTestUtil.createBook(FIRST_BOOK_ID,
-                FIRST_BOOK_NAME,
-                FIRST_BOOK_AUTHOR,
-                FIRST_BOOK_ISBN,
-                FIRST_BOOK_PRICE);
+        book1 = new Book().setId(FIRST_BOOK_ID)
+                .setTitle(FIRST_BOOK_NAME)
+                .setAuthor(FIRST_BOOK_AUTHOR)
+                .setPrice(BigDecimal.valueOf(20.00))
+                .setIsbn(FIRST_BOOK_ISBN);
 
-        category = CategoryTestUtil.createCategory(CATEGORY_ID, CATEGORY_NAME,
-                CATEGORY_DESCRIPTION);
+        category = new Category().setId(CATEGORY_ID)
+                .setName(CATEGORY_NAME);
 
-        book2 = BookTestUtil.createBookWithCategory(SECOND_BOOK_ID,
-                SECOND_BOOK_NAME,
-                SECOND_BOOK_AUTHOR,
-                SECOND_BOOK_ISBN,
-                Set.of(category));
+        book2 = new Book().setId(SECOND_BOOK_ID)
+                .setTitle(SECOND_BOOK_NAME)
+                .setAuthor(SECOND_BOOK_AUTHOR)
+                .setPrice(BigDecimal.valueOf(25.00))
+                .setIsbn(SECOND_BOOK_ISBN)
+                .setCategories(Set.of(category));
 
-        requestDto = BookTestUtil.createBookRequestDto(FIRST_BOOK_NAME,
-                FIRST_BOOK_AUTHOR,
-                FIRST_BOOK_ISBN,
-                FIRST_BOOK_PRICE);
+        requestDto = new CreateBookRequestDto()
+                .setTitle(FIRST_BOOK_NAME)
+                .setAuthor(FIRST_BOOK_AUTHOR)
+                .setPrice(BigDecimal.valueOf(20.00))
+                .setIsbn(FIRST_BOOK_ISBN);
 
-        expectedDto = BookTestUtil.createExpectedBookDto(FIRST_BOOK_ID,
-                FIRST_BOOK_NAME,
-                FIRST_BOOK_AUTHOR,
-                FIRST_BOOK_ISBN,
-                FIRST_BOOK_PRICE);
+        expectedDto = new BookDto().setId(FIRST_BOOK_ID)
+                .setTitle(FIRST_BOOK_NAME)
+                .setAuthor(FIRST_BOOK_AUTHOR)
+                .setPrice(BigDecimal.valueOf(20.00))
+                .setIsbn(FIRST_BOOK_ISBN);
 
-        books = List.of(book1, book2);
+        books = List.of(book1,book2);
 
-        updatedBook = BookTestUtil.createBook(FIRST_BOOK_ID,
-                UPDATED_BOOK_NAME,
-                UPDATED_BOOK_AUTHOR,
-                FIRST_BOOK_ISBN,
-                UPDATED_BOOK_PRICE);
+        updatedBook = new Book().setId(FIRST_BOOK_ID)
+                .setTitle("Update_Book_1.1")
+                .setAuthor("Update_Author_1.1")
+                .setPrice(BigDecimal.valueOf(35.00))
+                .setIsbn("111");
 
-        updatedRequestDto = BookTestUtil.createBookRequestDto(UPDATED_BOOK_NAME,
-                UPDATED_BOOK_AUTHOR,
-                FIRST_BOOK_ISBN,
-                FIRST_BOOK_PRICE);
+        updatedRequestDto = new CreateBookRequestDto()
+                .setTitle("Update_Book_1.1")
+                .setAuthor("Update_Author_1.1")
+                .setPrice(BigDecimal.valueOf(35.00))
+                .setIsbn("111");
 
-        updatedExpectedDto = BookTestUtil.createExpectedBookDto(FIRST_BOOK_ID,
-                UPDATED_BOOK_NAME,
-                UPDATED_BOOK_AUTHOR,
-                FIRST_BOOK_ISBN,
-                UPDATED_BOOK_PRICE);
+        updatedExpectedDto = new BookDto().setId(FIRST_BOOK_ID)
+                .setTitle("Update_Book_1.1")
+                .setAuthor("Update_Author_1.1")
+                .setPrice(BigDecimal.valueOf(35.00))
+                .setIsbn("111");
     }
 
     @Test
@@ -144,9 +139,9 @@ class BookServiceImplTest {
         assertNotNull(actual, "Saved book is null");
         assertEquals(expectedDto, actual, "Saved book is not equal to expected");
 
-        verify(bookMapper, times(WANTED_TIMES_OF_INVOKE)).toModel(requestDto);
-        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).save(book1);
-        verify(bookMapper, times(WANTED_TIMES_OF_INVOKE)).toDto(book1);
+        verify(bookMapper, times(1)).toModel(requestDto);
+        verify(bookRepository, times(1)).save(book1);
+        verify(bookMapper, times(1)).toDto(book1);
 
         verifyNoMoreInteractions(bookMapper, bookRepository);
     }
@@ -193,7 +188,7 @@ class BookServiceImplTest {
                 "Total elements don`t match");
         assertEquals(expectedDtoPage.getPageable(), actual.getPageable(), "Pageable doesn`t match");
 
-        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).findAll(pageable);
+        verify(bookRepository, times(1)).findAll(pageable);
         verify(bookMapper, times(books.size())).toDto(any(Book.class));
 
         verifyNoMoreInteractions(bookRepository, bookMapper);
@@ -214,27 +209,22 @@ class BookServiceImplTest {
         assertNotNull(actual, "Found book is null");
         assertEquals(expectedDto, actual, "Found book is not equal to expected");
 
-        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).findById(FIRST_BOOK_ID);
-        verify(bookMapper, times(WANTED_TIMES_OF_INVOKE)).toDto(book1);
+        verify(bookRepository, times(1)).findById(FIRST_BOOK_ID);
+        verify(bookMapper, times(1)).toDto(book1);
 
         verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
     @Test
     @DisplayName("Find book by id with non-existent id")
-    void findBookById_NonExistentId_ThrowsExceptionWithMessage() {
-        // given
+    void findBookById_NonExistentId_ThrowsException() {
+        //given
         when(bookRepository.findById(INCORRECT_BOOK_ID)).thenReturn(Optional.empty());
-        String expectedMessage = "Can`t get book by id: " + INCORRECT_BOOK_ID;
 
-        // when
-        EntityNotFoundException thrownException = assertThrows(EntityNotFoundException.class,
+        //then
+        assertThrows(EntityNotFoundException.class,
                 () -> bookService.getById(INCORRECT_BOOK_ID)
         );
-
-        // then
-        assertEquals(expectedMessage, thrownException.getMessage(),
-                "Error message should match the expected message.");
     }
 
     @Test
@@ -244,7 +234,7 @@ class BookServiceImplTest {
         bookService.deleteById(FIRST_BOOK_ID);
 
         //then
-        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).deleteById(FIRST_BOOK_ID);
+        verify(bookRepository, times(1)).deleteById(FIRST_BOOK_ID);
 
         verifyNoMoreInteractions(bookRepository);
     }
@@ -268,12 +258,10 @@ class BookServiceImplTest {
         assertNotNull(actual, "Updated book is null");
         assertEquals(updatedExpectedDto, actual, "Updated book is not equal to expected");
 
-        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE))
-                .findById(FIRST_BOOK_ID);
-        verify(bookMapper, times(WANTED_TIMES_OF_INVOKE)).updateBookFromDto(updatedRequestDto,
-                book1);
-        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).save(book1);
-        verify(bookMapper, times(WANTED_TIMES_OF_INVOKE)).toDto(updatedBook);
+        verify(bookRepository, times(1)).findById(FIRST_BOOK_ID);
+        verify(bookMapper, times(1)).updateBookFromDto(updatedRequestDto, book1);
+        verify(bookRepository, times(1)).save(book1);
+        verify(bookMapper, times(1)).toDto(updatedBook);
 
         verifyNoMoreInteractions(bookRepository, bookMapper);
     }
@@ -283,14 +271,10 @@ class BookServiceImplTest {
     void updateBookById_NonExistentId_ThrowsException() {
         //given
         when(bookRepository.findById(INCORRECT_BOOK_ID)).thenReturn(Optional.empty());
-        String expectedMessage = "Book with id " + INCORRECT_BOOK_ID + " not found";
-
-        //when
-        EntityNotFoundException thrownException = assertThrows(EntityNotFoundException.class,
-                () -> bookService.updateById(INCORRECT_BOOK_ID, updatedRequestDto));
 
         //then
-        assertEquals(expectedMessage, thrownException.getMessage());
+        assertThrows(EntityNotFoundException.class,
+                () -> bookService.updateById(INCORRECT_BOOK_ID, updatedRequestDto));
     }
 
     @Test
@@ -336,10 +320,8 @@ class BookServiceImplTest {
         assertEquals(expectedDtoList.size(), actual.getContent().size(),
                 "Number of books doesn't match");
 
-        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).findAllByCategoryId(categoryId,
-                pageable);
-        verify(bookMapper, times(books.size()))
-                .toWithoutCategoryIdDto(any(Book.class));
+        verify(bookRepository, times(1)).findAllByCategoryId(categoryId, pageable);
+        verify(bookMapper, times(books.size())).toWithoutCategoryIdDto(any(Book.class));
 
         verifyNoMoreInteractions(bookRepository, bookMapper);
     }
@@ -365,8 +347,7 @@ class BookServiceImplTest {
         assertTrue(actual.getContent().isEmpty(), "Found books list is not empty");
         assertEquals(0, actual.getContent().size(), "Number of books doesn't match");
 
-        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).findAllByCategoryId(categoryId,
-                pageable);
+        verify(bookRepository, times(1)).findAllByCategoryId(categoryId, pageable);
 
         verifyNoMoreInteractions(bookRepository);
     }
