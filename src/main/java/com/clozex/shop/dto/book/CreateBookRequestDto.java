@@ -9,9 +9,11 @@ import java.math.BigDecimal;
 import java.util.Set;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 @Getter
 @Setter
+@Accessors(chain = true)
 public class CreateBookRequestDto {
     @NotBlank(message = "Title cannot be empty")
     @Size(max = 255)
