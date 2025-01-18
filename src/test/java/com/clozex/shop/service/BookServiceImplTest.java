@@ -59,6 +59,7 @@ class BookServiceImplTest {
     private static final Long CATEGORY_ID = 1L;
     private static final String CATEGORY_NAME = "Category_1";
     private static final String CATEGORY_DESCRIPTION = "Description_1";
+    private static final int WANTED_TIMES_OF_INVOKE = 1;
     private static Category category;
     private static Book book2;
     private static Book book1;
@@ -143,9 +144,9 @@ class BookServiceImplTest {
         assertNotNull(actual, "Saved book is null");
         assertEquals(expectedDto, actual, "Saved book is not equal to expected");
 
-        verify(bookMapper, times(1)).toModel(requestDto);
-        verify(bookRepository, times(1)).save(book1);
-        verify(bookMapper, times(1)).toDto(book1);
+        verify(bookMapper, times(WANTED_TIMES_OF_INVOKE)).toModel(requestDto);
+        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).save(book1);
+        verify(bookMapper, times(WANTED_TIMES_OF_INVOKE)).toDto(book1);
 
         verifyNoMoreInteractions(bookMapper, bookRepository);
     }
@@ -192,7 +193,7 @@ class BookServiceImplTest {
                 "Total elements don`t match");
         assertEquals(expectedDtoPage.getPageable(), actual.getPageable(), "Pageable doesn`t match");
 
-        verify(bookRepository, times(1)).findAll(pageable);
+        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).findAll(pageable);
         verify(bookMapper, times(books.size())).toDto(any(Book.class));
 
         verifyNoMoreInteractions(bookRepository, bookMapper);
@@ -213,22 +214,27 @@ class BookServiceImplTest {
         assertNotNull(actual, "Found book is null");
         assertEquals(expectedDto, actual, "Found book is not equal to expected");
 
-        verify(bookRepository, times(1)).findById(FIRST_BOOK_ID);
-        verify(bookMapper, times(1)).toDto(book1);
+        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).findById(FIRST_BOOK_ID);
+        verify(bookMapper, times(WANTED_TIMES_OF_INVOKE)).toDto(book1);
 
         verifyNoMoreInteractions(bookRepository, bookMapper);
     }
 
     @Test
     @DisplayName("Find book by id with non-existent id")
-    void findBookById_NonExistentId_ThrowsException() {
-        //given
+    void findBookById_NonExistentId_ThrowsExceptionWithMessage() {
+        // given
         when(bookRepository.findById(INCORRECT_BOOK_ID)).thenReturn(Optional.empty());
+        String expectedMessage = "Can`t get book by id: " + INCORRECT_BOOK_ID;
 
-        //then
-        assertThrows(EntityNotFoundException.class,
+        // when
+        EntityNotFoundException thrownException = assertThrows(EntityNotFoundException.class,
                 () -> bookService.getById(INCORRECT_BOOK_ID)
         );
+
+        // then
+        assertEquals(expectedMessage, thrownException.getMessage(),
+                "Error message should match the expected message.");
     }
 
     @Test
@@ -238,7 +244,7 @@ class BookServiceImplTest {
         bookService.deleteById(FIRST_BOOK_ID);
 
         //then
-        verify(bookRepository, times(1)).deleteById(FIRST_BOOK_ID);
+        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).deleteById(FIRST_BOOK_ID);
 
         verifyNoMoreInteractions(bookRepository);
     }
@@ -262,10 +268,12 @@ class BookServiceImplTest {
         assertNotNull(actual, "Updated book is null");
         assertEquals(updatedExpectedDto, actual, "Updated book is not equal to expected");
 
-        verify(bookRepository, times(1)).findById(FIRST_BOOK_ID);
-        verify(bookMapper, times(1)).updateBookFromDto(updatedRequestDto, book1);
-        verify(bookRepository, times(1)).save(book1);
-        verify(bookMapper, times(1)).toDto(updatedBook);
+        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE))
+                .findById(FIRST_BOOK_ID);
+        verify(bookMapper, times(WANTED_TIMES_OF_INVOKE)).updateBookFromDto(updatedRequestDto,
+                book1);
+        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).save(book1);
+        verify(bookMapper, times(WANTED_TIMES_OF_INVOKE)).toDto(updatedBook);
 
         verifyNoMoreInteractions(bookRepository, bookMapper);
     }
@@ -275,10 +283,14 @@ class BookServiceImplTest {
     void updateBookById_NonExistentId_ThrowsException() {
         //given
         when(bookRepository.findById(INCORRECT_BOOK_ID)).thenReturn(Optional.empty());
+        String expectedMessage = "Book with id " + INCORRECT_BOOK_ID + " not found";
+
+        //when
+        EntityNotFoundException thrownException = assertThrows(EntityNotFoundException.class,
+                () -> bookService.updateById(INCORRECT_BOOK_ID, updatedRequestDto));
 
         //then
-        assertThrows(EntityNotFoundException.class,
-                () -> bookService.updateById(INCORRECT_BOOK_ID, updatedRequestDto));
+        assertEquals(expectedMessage, thrownException.getMessage());
     }
 
     @Test
@@ -324,8 +336,10 @@ class BookServiceImplTest {
         assertEquals(expectedDtoList.size(), actual.getContent().size(),
                 "Number of books doesn't match");
 
-        verify(bookRepository, times(1)).findAllByCategoryId(categoryId, pageable);
-        verify(bookMapper, times(books.size())).toWithoutCategoryIdDto(any(Book.class));
+        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).findAllByCategoryId(categoryId,
+                pageable);
+        verify(bookMapper, times(books.size()))
+                .toWithoutCategoryIdDto(any(Book.class));
 
         verifyNoMoreInteractions(bookRepository, bookMapper);
     }
@@ -351,7 +365,8 @@ class BookServiceImplTest {
         assertTrue(actual.getContent().isEmpty(), "Found books list is not empty");
         assertEquals(0, actual.getContent().size(), "Number of books doesn't match");
 
-        verify(bookRepository, times(1)).findAllByCategoryId(categoryId, pageable);
+        verify(bookRepository, times(WANTED_TIMES_OF_INVOKE)).findAllByCategoryId(categoryId,
+                pageable);
 
         verifyNoMoreInteractions(bookRepository);
     }

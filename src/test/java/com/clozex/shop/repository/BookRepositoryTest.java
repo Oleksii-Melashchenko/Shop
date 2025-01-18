@@ -29,13 +29,15 @@ class BookRepositoryTest {
     void findAllBooksByCategoryId_ExistingCategory_ReturnsTBooks() {
         // given
         Long categoryId = 1L;
+        int expectedCount = 3;
+        String expectedTitle = "book2";
 
         // when
         Page<Book> books = bookRepository.findAllByCategoryId(categoryId, Pageable.unpaged());
 
         // then
-        assertEquals(3, books.getContent().size());
-        assertEquals("book2", books.getContent().getFirst().getTitle());
+        assertEquals(expectedCount, books.getContent().size());
+        assertEquals(expectedTitle, books.getContent().getFirst().getTitle());
     }
 
     @Test
