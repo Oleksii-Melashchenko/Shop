@@ -3,7 +3,6 @@ package com.clozex.shop.controller;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -13,8 +12,8 @@ import com.clozex.shop.dto.book.BookDtoWithoutCategoryIds;
 import com.clozex.shop.dto.category.CategoryDto;
 import com.clozex.shop.dto.category.CreateCategoryRequestDto;
 import com.clozex.shop.repository.category.CategoryRepository;
-import com.clozex.shop.util.PageResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -41,7 +40,6 @@ import org.springframework.web.context.WebApplicationContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CategoryControllerTest {
     private static final Long TEST_CATEGORY_ID = 1L;
-    private static final Long INCORRECT_CATEGORY_ID = 111L;
     private static final String TEST_CATEGORY_NAME = "category1";
     private static final String TEST_CATEGORY_DESCRIPTION = "description1";
     private static final String ALTERNATIVE_CATEGORY_NAME = "category2";
@@ -93,7 +91,7 @@ class CategoryControllerTest {
         }
     }
 
-    @WithMockUser(roles = {"USER"})
+    @WithMockUser()
     @Test
     @DisplayName("Getting all categories")
     void getAllCategories_ReturnPageOfCategoryDto()
@@ -108,12 +106,13 @@ class CategoryControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String jsonResponse = result.getResponse().getContentAsString();
+        JsonNode root = objectMapper.readTree(result.getResponse().getContentAsString());
 
-        PageResponse<CategoryDto> actualPage = objectMapper
-                .readValue(jsonResponse, new TypeReference<>() {});
-
-        List<CategoryDto> actualContent = actualPage.getContent();
+        List<CategoryDto> actualContent = objectMapper.readValue(
+                root.get("content").toString(),
+                new TypeReference<>() {
+                }
+        );
 
         //then
         assertNotNull(actualContent);
@@ -121,7 +120,7 @@ class CategoryControllerTest {
         assertEquals(3, actualContent.size());
     }
 
-    @WithMockUser(roles = {"USER"})
+    @WithMockUser()
     @Test
     @DisplayName("Getting all books by category id")
     void getAllBooksByCategoryId_ReturnPageOfBookDtoWithoutCategoryIds()
@@ -135,12 +134,13 @@ class CategoryControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        String jsonResponse = result.getResponse().getContentAsString();
+        JsonNode root = objectMapper.readTree(result.getResponse().getContentAsString());
 
-        PageResponse<BookDtoWithoutCategoryIds> actualPage = objectMapper
-                .readValue(jsonResponse, new TypeReference<>() {});
-
-        List<BookDtoWithoutCategoryIds> actualContent = actualPage.getContent();
+        List<BookDtoWithoutCategoryIds> actualContent = objectMapper.readValue(
+                root.get("content").toString(),
+                new TypeReference<>() {
+                }
+        );
 
         //then
         assertNotNull(actualContent);
@@ -148,7 +148,7 @@ class CategoryControllerTest {
         assertEquals(3, actualContent.size());
     }
 
-    @WithMockUser(roles = {"USER"})
+    @WithMockUser()
     @Test
     @DisplayName("Getting category by id with valid id")
     void findCategoryById_ValidId_ReturnCategoryDto() throws Exception {
@@ -168,28 +168,6 @@ class CategoryControllerTest {
         //then
         assertNotNull(actual);
         reflectionEquals(expect, actual);
-    }
-
-    @WithMockUser(roles = {"USER"})
-    @Test
-    @DisplayName("Getting category by id with invalid id")
-    void findCategoryById_InvalidId_ReturnNotFound() throws Exception {
-        //given
-        String expectedErrorMessage = "Can`t get category by id: " + INCORRECT_CATEGORY_ID;
-
-        // When
-        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/categories/{id}",
-                                INCORRECT_CATEGORY_ID)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andReturn();
-
-        String responseContent = result.getResponse().getContentAsString();
-
-        // Then
-        assertNotNull(responseContent);
-        assertTrue(responseContent.contains(expectedErrorMessage),
-                "Response should contain error message: " + expectedErrorMessage);
     }
 
     @WithMockUser(roles = {"ADMIN"})

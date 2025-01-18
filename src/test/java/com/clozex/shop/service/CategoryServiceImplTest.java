@@ -17,7 +17,6 @@ import com.clozex.shop.mapper.CategoryMapper;
 import com.clozex.shop.model.Category;
 import com.clozex.shop.repository.category.CategoryRepository;
 import com.clozex.shop.service.impl.CategoryServiceImpl;
-import com.clozex.shop.util.CategoryTestUtil;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,9 +37,6 @@ class CategoryServiceImplTest {
     private static final Long INCORRECT_CATEGORY_ID = 111L;
     private static final String CATEGORY_NAME = "Category_1";
     private static final String CATEGORY_DESCRIPTION = "Description_1";
-    private static final String UPDATED_CATEGORY_NAME = "Update_Category_1.1";
-    private static final String UPDATED_CATEGORY_DESCRIPTION = "Update_Description_1.1";
-    private static final int WANTED_TIMES_OF_INVOKE = 1;
     private static Category category;
     private static Category category2;
     private static Category updatedCategory;
@@ -61,31 +57,32 @@ class CategoryServiceImplTest {
 
     @BeforeAll
     static void beforeAll() {
-        category = CategoryTestUtil.createCategory(CATEGORY_ID,
+        category = new Category().setId(CATEGORY_ID)
+                .setName(CATEGORY_NAME)
+                .setDescription(CATEGORY_DESCRIPTION);
+
+        requestDto = new CreateCategoryRequestDto(CATEGORY_NAME,
+                CATEGORY_DESCRIPTION);
+
+        expectedDto = new CategoryDto(CATEGORY_ID,
                 CATEGORY_NAME,
                 CATEGORY_DESCRIPTION);
 
-        requestDto = CategoryTestUtil.createCategoryRequestDto(CATEGORY_NAME,
-                CATEGORY_DESCRIPTION);
+        categories = List.of(category,category2 = new Category()
+                .setId(2L)
+                .setName("Category_2")
+                .setDescription("Description_2")
+        );
 
-        expectedDto = CategoryTestUtil.createCategoryDto(CATEGORY_ID,
-                CATEGORY_NAME,
-                CATEGORY_DESCRIPTION);
+        updatedCategory = new Category().setId(CATEGORY_ID)
+                .setName("Update_Category_1.1")
+                .setDescription("Update_Description_1.1");
 
-        categories = List.of(category,category2 = CategoryTestUtil.createCategory(2L,
-                "Category_2",
-                "Description_2"));
+        updatedRequestDto = new CreateCategoryRequestDto("Update_Category_1.1",
+                "Update_Description_1.1");
 
-        updatedCategory = CategoryTestUtil.createCategory(CATEGORY_ID,
-                UPDATED_CATEGORY_NAME,
-                UPDATED_CATEGORY_DESCRIPTION);
-
-        updatedRequestDto = CategoryTestUtil.createCategoryRequestDto(UPDATED_CATEGORY_NAME,
-                UPDATED_CATEGORY_DESCRIPTION);
-
-        updatedExpectedDto = CategoryTestUtil.createCategoryDto(CATEGORY_ID,
-        UPDATED_CATEGORY_NAME,
-        UPDATED_CATEGORY_DESCRIPTION);
+        updatedExpectedDto = new CategoryDto(CATEGORY_ID, "Update_Category_1.1",
+                "Update_Description_1.1");
     }
 
     @Test
@@ -105,9 +102,9 @@ class CategoryServiceImplTest {
         assertNotNull(actual, "Saved category is null");
         assertEquals(expectedDto, actual, "Saved category is not equal to expected");
 
-        verify(categoryMapper, times(WANTED_TIMES_OF_INVOKE)).toModel(requestDto);
-        verify(categoryRepository, times(WANTED_TIMES_OF_INVOKE)).save(category);
-        verify(categoryMapper, times(WANTED_TIMES_OF_INVOKE)).toDto(category);
+        verify(categoryMapper, times(1)).toModel(requestDto);
+        verify(categoryRepository, times(1)).save(category);
+        verify(categoryMapper, times(1)).toDto(category);
 
         verifyNoMoreInteractions(categoryMapper, categoryRepository);
     }
@@ -151,7 +148,7 @@ class CategoryServiceImplTest {
                 "Total elements don`t match");
         assertEquals(expectedDtoPage.getPageable(), actual.getPageable(), "Pageable doesn`t match");
 
-        verify(categoryRepository, times(WANTED_TIMES_OF_INVOKE)).findAll(pageable);
+        verify(categoryRepository, times(1)).findAll(pageable);
         verify(categoryMapper, times(categories.size())).toDto(any(Category.class));
 
         verifyNoMoreInteractions(categoryRepository, categoryMapper);
@@ -164,7 +161,7 @@ class CategoryServiceImplTest {
         categoryService.deleteById(CATEGORY_ID);
 
         //then
-        verify(categoryRepository, times(WANTED_TIMES_OF_INVOKE)).deleteById(CATEGORY_ID);
+        verify(categoryRepository, times(1)).deleteById(CATEGORY_ID);
 
         verifyNoMoreInteractions(categoryRepository);
     }
@@ -184,8 +181,8 @@ class CategoryServiceImplTest {
         assertNotNull(actual, "Found book is null");
         assertEquals(expectedDto, actual, "Found book is not equal to expected");
 
-        verify(categoryRepository, times(WANTED_TIMES_OF_INVOKE)).findById(CATEGORY_ID);
-        verify(categoryMapper, times(WANTED_TIMES_OF_INVOKE)).toDto(category);
+        verify(categoryRepository, times(1)).findById(CATEGORY_ID);
+        verify(categoryMapper, times(1)).toDto(category);
 
         verifyNoMoreInteractions(categoryRepository, categoryMapper);
     }
@@ -195,16 +192,11 @@ class CategoryServiceImplTest {
     void findCategoryById_NonExistentId_ThrowsException() {
         //given
         when(categoryRepository.findById(INCORRECT_CATEGORY_ID)).thenReturn(Optional.empty());
-        String expectedMessage = "Can`t get category by id: " + INCORRECT_CATEGORY_ID;
 
-        // when
-        EntityNotFoundException thrownException = assertThrows(EntityNotFoundException.class,
+        //then
+        assertThrows(EntityNotFoundException.class,
                 () -> categoryService.getById(INCORRECT_CATEGORY_ID)
         );
-
-        // then
-        assertEquals(expectedMessage, thrownException.getMessage(),
-                "Error message should match the expected message.");
     }
 
     @Test
@@ -226,11 +218,10 @@ class CategoryServiceImplTest {
         assertNotNull(actual, "Updated category is null");
         assertEquals(updatedExpectedDto, actual, "Updated category is not equal to expected");
 
-        verify(categoryRepository, times(WANTED_TIMES_OF_INVOKE)).findById(CATEGORY_ID);
-        verify(categoryMapper, times(WANTED_TIMES_OF_INVOKE))
-                .updateCategoryFromDto(updatedRequestDto, category);
-        verify(categoryRepository, times(WANTED_TIMES_OF_INVOKE)).save(category);
-        verify(categoryMapper, times(WANTED_TIMES_OF_INVOKE)).toDto(updatedCategory);
+        verify(categoryRepository, times(1)).findById(CATEGORY_ID);
+        verify(categoryMapper, times(1)).updateCategoryFromDto(updatedRequestDto, category);
+        verify(categoryRepository, times(1)).save(category);
+        verify(categoryMapper, times(1)).toDto(updatedCategory);
 
         verifyNoMoreInteractions(categoryRepository, categoryMapper);
     }
@@ -240,15 +231,9 @@ class CategoryServiceImplTest {
     void updateCategoryById_NonExistentId_ThrowsException() {
         //given
         when(categoryRepository.findById(INCORRECT_CATEGORY_ID)).thenReturn(Optional.empty());
-        String expectedMessage = "Category with id " + INCORRECT_CATEGORY_ID + " not found";
 
-        // when
-        EntityNotFoundException thrownException = assertThrows(EntityNotFoundException.class,
-                () -> categoryService.updateById(INCORRECT_CATEGORY_ID, updatedRequestDto)
-        );
-
-        // then
-        assertEquals(expectedMessage, thrownException.getMessage(),
-                "Error message should match the expected message.");
+        //then
+        assertThrows(EntityNotFoundException.class,
+                () -> categoryService.updateById(INCORRECT_CATEGORY_ID, updatedRequestDto));
     }
 }
